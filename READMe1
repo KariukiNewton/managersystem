@@ -1,0 +1,78 @@
+meat-processing-system/
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── auth/
+│   │   │   │   ├── Login.jsx
+│   │   │   │   ├── CreateUser.jsx
+│   │   │   │   └── PasswordReset.jsx
+│   │   │   ├── common/
+│   │   │   │   ├── LoadingSpinner.jsx
+│   │   │   │   └── NotificationBell.jsx
+│   │   │   ├── employees/
+│   │   │   │   ├── PerformanceChart.jsx
+│   │   │   │   ├── AttendanceCalendar.jsx
+│   │   │   │   └── LeaveRequestForm.jsx
+│   │   │   └── departments/
+│   │   │       ├── DepartmentSelector.jsx
+│   │   │       └── TeamStructureView.jsx
+│   │   ├── pages/
+│   │   │   ├── auth/
+│   │   │   │   ├── LoginPage.jsx
+│   │   │   │   └── RegistrationPage.jsx
+│   │   │   ├── employees/
+│   │   │   │   ├── EmployeeDashboard.jsx
+│   │   │   │   ├── PersonalInfoPage.jsx
+│   │   │   │   ├── PerformancePage.jsx
+│   │   │   │   ├── AttendancePage.jsx
+│   │   │   │   └── LeaveManagementPage.jsx
+│   │   │   ├── departments/
+│   │   │   │   ├── DepartmentDashboard.jsx
+│   │   │   │   ├── DepartmentDetailsPage.jsx
+│   │   │   │   └── TeamStructurePage.jsx
+│   │   │   ├── admin/
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── UserManagement.jsx
+│   │   │   │   └── SystemSettings.jsx
+│   │   │   └── finance/
+│   │   │       ├── Dashboard.jsx
+│   │   │       ├── PayrollManagement.jsx
+│   │   │       └── FinancialReports.jsx
+│   │   └── ...
+│   └── ...
+│
+├── server/
+│   ├── src/
+│   │   ├── controllers/
+│   │   │   ├── authController.js
+│   │   │   ├── userController.js
+│   │   │   ├── employeeController.js
+│   │   │   ├── departmentController.js
+│   │   │   ├── performanceController.js
+│   │   │   ├── attendanceController.js
+│   │   │   ├── leaveController.js
+│   │   │   └── financialController.js
+│   │   ├── models/
+│   │   │   ├── User.js
+│   │   │   ├── Employee.js
+│   │   │   ├── Department.js
+│   │   │   ├── PerformanceRecord.js
+│   │   │   ├── AttendanceLog.js
+│   │   │   ├── LeaveRequest.js
+│   │   │   └── FinancialRecord.js
+│   │   ├── routes/
+│   │   │   ├── auth.js
+│   │   │   ├── user.js
+│   │   │   ├── employee.js
+│   │   │   ├── department.js
+│   │   │   ├── performance.js
+│   │   │   ├── attendance.js
+│   │   │   ├── leave.js
+│   │   │   └── financial.js
+│   │   └── app.js
+│   └── .env
+│
+└── README.md
+
+
+meat-processor-branch github
