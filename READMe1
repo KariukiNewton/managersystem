@@ -38,8 +38,11 @@ meat-processing-system/
 │   │   │       ├── Dashboard.jsx
 │   │   │       ├── PayrollManagement.jsx
 │   │   │       └── FinancialReports.jsx
-│   │   └── ...
-│   └── ...
+│   │   └── App.css
+        │── App.jsx
+        └── index.css
+        └── main.jsx
+│  
 │
 ├── server/
 │   ├── src/

@@ -1,35 +1,21 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const jwt = require("jsonwebtoken");
 
-const auth = async (req, res, next) => {
-    try {
-        const token = req.header('Authorization').replace('Bearer', '');
-        const decode = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findOne({ userId: decode.userId });
+const authenticate = (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-        if (!user) {
-            throw new Error();
-        }
-
-        req.user = user;
-        req.token = token;
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.status(403).json({ message: "Forbidden" });
+        req.user = decoded;
         next();
-    } catch (error) {
-        res.status(401).json({ message: 'Please authenticate' });
-    }
+    });
 };
 
-const adminAuth = async (req, res, next) => {
-    try {
-        await auth(req, res, () => {
-            if (req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Admin access required' });
-            }
-            next();
-        })
-    } catch {
-        res.status(401).json({ message: 'Please Authenticate' })
+const authorize = (roles) => (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Access Denied" });
     }
+    next();
 };
 
-module.exports = { auth, adminAuth }
+module.exports = { authenticate, authorize };
