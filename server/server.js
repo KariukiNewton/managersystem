@@ -4,7 +4,8 @@ const cors = require('cors');
 dotenv = require('dotenv').config();
 
 // Importing routes
-const authRoutes = require("../server/src/routes/authRoute.js");
+const authRoutes = require("./src/routes/authRoute.js");
+const userRoutes = require("./src/routes/userRoutes.js");
 //const protectedRoutes = require("./routes/protectedRoutes.js");
 
 const app = express();
@@ -27,7 +28,8 @@ app.get('/', (req, res) => {
 });
 
 // Authentication routes (login, register)
-app.use('/', authRoutes);
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
 
 // Protected routes (admin dashboard, finance dashboard, employee dashboard)
 //app.use("/", protectedRoutes);

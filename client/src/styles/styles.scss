@@ -4,6 +4,8 @@
 // Import Component-Specific SCSS
 @use "admHeaderSection";
 @use "admSidebar";
+@use "admDashboard";
+@use "login";
 
 
 // Theme Variables using CSS Variables
@@ -20,6 +22,7 @@
 }
 
 [data-theme="dark"] {
+    --sidebar-bg: #1e1e1e;
     --primary-color: #1e90ff;
     --secondary-color: #444;
     --bg-color: #121212;
@@ -38,173 +41,6 @@ body {
     margin: 0;
     padding: 0;
     transition: background 0.3s ease, color 0.3s ease;
-}
-
-// Login Page
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: var(--bg-color);
-
-    .login-form {
-        background: var(--card-bg);
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 0 10px var(--box-shadow);
-
-        h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-
-        .error-message {
-            color: red;
-            margin-bottom: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-
-            label {
-                display: block;
-                font-weight: bold;
-                margin-bottom: 0.5rem;
-                color: var(--text-color);
-            }
-
-            input {
-                width: 100%;
-                padding: 0.5rem;
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
-                background: var(--bg-color);
-                color: var(--text-color);
-            }
-        }
-
-        .login-button {
-            width: 100%;
-            padding: 0.5rem;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-
-            &:hover {
-                background: color.scale(#007bff, $lightness: -10%);
-            }
-        }
-    }
-}
-
-// Dashboard Styles
-.admin-dashboard-container {
-    padding: 2rem;
-
-    h1 {
-        color: var(--primary-color);
-    }
-}
-
-// Sidebar Styling
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    background: var(--card-bg);
-    color: var(--text-color);
-    border-right: 1px solid var(--border-color);
-    transition: transform 0.3s ease-in-out;
-
-    .sidebar-header {
-        padding: 1rem;
-        font-weight: bold;
-        text-align: center;
-        background: var(--primary-color);
-        color: white;
-    }
-
-    .sidebar-menu {
-        padding: 1rem;
-
-        .menu-item {
-            padding: 0.75rem;
-            cursor: pointer;
-            transition: background 0.2s ease-in-out;
-            border-bottom: 1px solid var(--border-color);
-
-            &:hover {
-                background: var(--primary-color);
-                color: white;
-            }
-        }
-    }
-}
-
-// Header Styling
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: var(--card-bg);
-    color: var(--text-color);
-    box-shadow: 0 2px 5px var(--box-shadow);
-
-    .search-bar {
-        flex: 1;
-        margin-left: 1rem;
-
-        input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--bg-color);
-            color: var(--text-color);
-        }
-    }
-
-    .icons {
-        display: flex;
-        gap: 1rem;
-
-        .icon {
-            cursor: pointer;
-            transition: color 0.2s ease-in-out;
-
-            &:hover {
-                color: var(--primary-color);
-            }
-        }
-    }
-}
-
-// Button Styling
-.button {
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    font-weight: bold;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    border: none;
-    background: var(--primary-color);
-    color: white;
-
-    &:hover {
-        background: color.scale(#007bff, $lightness: -10%);
-    }
-
-    &.secondary {
-        background: var(--secondary-color);
-
-        &:hover {
-            background: color.scale(#6c757d, $lightness: -10%);
-        }
-    }
 }
 
 // Responsive Styles

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Import toastify
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -17,9 +18,11 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("/login", formData);
+            const response = await axios.post("/auth/login", formData);
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("user", JSON.stringify(response.data.user));
+
+            toast.success("Login successful!"); // Success notification
 
             // Redirect based on role
             switch (response.data.user.role) {
@@ -37,6 +40,7 @@ const Login = () => {
             }
         } catch (error) {
             setError(error.response?.data?.message || "Login failed");
+            toast.error(error.response?.data?.message || "Login failed"); // Error notification
         }
     };
 

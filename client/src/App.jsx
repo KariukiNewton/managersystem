@@ -13,7 +13,7 @@ const App = () => {
                 {/* Default route directs to Login */}
                 <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/dashboard/*" element={<AdminDashboard />} />
                 <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
                 <Route path="/finance/dashboard" element={<FinanceDashboard />} />
             </Routes>

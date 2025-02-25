@@ -28,6 +28,20 @@ const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
+        department: {
+            type: String,
+            trim: true,
+        },
+        age: {
+            type: Number,
+            required: true,
+            min: 18,
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female'],
+            required: true,
+        },
         lastLogin: {
             type: Date,
             default: null,

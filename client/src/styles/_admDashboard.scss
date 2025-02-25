@@ -1,0 +1,31 @@
+.admin-dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-color);
+
+    .main-content {
+        margin-left: 60px; // Default margin for collapsed sidebar
+        margin-top: 90px; // Space for fixed header
+        padding: 2rem;
+        flex: 1;
+        transition: margin-left 0.3s ease;
+
+        &.shifted {
+            margin-left: 250px; // Margin when sidebar is expanded
+        }
+    }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+    .admin-dashboard-container {
+        .main-content {
+            margin-left: 0;
+            padding: 1rem;
+
+            &.shifted {
+                margin-left: 0;
+            }
+        }
+    }
+}
