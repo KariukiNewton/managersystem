@@ -2,10 +2,26 @@
 @use "sass:color";
 
 // Import Component-Specific SCSS
-@use "admHeaderSection";
-@use "admSidebar";
-@use "admDashboard";
-@use "login";
+@use "../components/header";
+@use "../components/footer";
+@use "../components/userProfile";
+@use "../components/sidebar";
+
+
+
+
+@use "../pages/admin/admDashboard";
+@use "../auth/login";
+
+
+@use "../pages/finance/financeDashboard";
+@use "../pages/finance/financeEmpFinancials";
+@use "../pages/finance/financeInvoice";
+@use "../pages/finance/financePayroll";
+@use "../pages/finance/financeReports";
+@use "../pages/finance/financeSettings";
+@use "../pages/finance/financeSidebar";
+
 
 
 // Theme Variables using CSS Variables
@@ -44,18 +60,3 @@ body {
 }
 
 // Responsive Styles
-@media (max-width: 768px) {
-    .sidebar {
-        width: 200px;
-    }
-
-    .header {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .search-bar {
-        margin-top: 0.5rem;
-        width: 100%;
-    }
-}

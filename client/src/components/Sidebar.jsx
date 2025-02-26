@@ -1,54 +1,52 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { FiUsers, FiDollarSign, FiBriefcase, FiCalendar, FiClock, FiChevronRight, FiChevronLeft } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
+import { FiMenu, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import "./_sidebar.scss"; // Ensure styles are correctly applied
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
-    const [activeTab, setActiveTab] = useState("Users");
+const Sidebar = ({ isOpen, toggleSidebar, navItems, user }) => {
+    const [activeTab, setActiveTab] = useState(navItems[0]?.name || "");
 
     return (
-        <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-            <button className="toggle-btn" onClick={toggleSidebar}>
-                {isOpen ? <FiChevronLeft /> : <FiChevronRight />}
-            </button>
+        <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
+            {/* Toggle Button */}
 
             <div className="sidebar-content">
-                {/* Top Section: Company Logo */}
+                {isOpen && (
+                    <button className="toggle-btn" onClick={toggleSidebar} aria-label="Toggle Sidebar">
+                        <FiChevronLeft />
+                    </button>
+                )}
+                {/* Sidebar Logo */}
                 <div className="sidebar-logo">
-                    {isOpen && <h2>Farmer Choice</h2>}
+                    {isOpen && <h2>Farmers Choice</h2>}
                 </div>
 
-                {/* Middle Section: User Profile */}
+                {/* Sidebar Profile */}
                 {isOpen && (
                     <div className="sidebar-profile">
-                        <img src="/assets/profile.jpg" alt="User Profile" />
-                        <p>Admin Name</p>
+                        <img src={user?.profilePic || "/assets/profile.jpg"} alt="User Profile" />
+                        <p>{user?.name || "Admin"}</p>
                     </div>
                 )}
 
-                {/* Bottom Section: Business Details */}
+                {/* Sidebar Menu */}
                 <ul className="sidebar-menu">
-                    {[
-                        { name: "Users", icon: <FiUsers />, path: "/admin/dashboard/users" },
-                        { name: "Finance", icon: <FiDollarSign />, path: "/admin/dashboard/finance" },
-                        { name: "Departments", icon: <FiBriefcase />, path: "/admin/dashboard/departments" },
-                        { name: "Attendance & Leaves", icon: <FiClock />, path: "/admin/dashboard/attendance" },
-                        { name: "Performance", icon: <FiCalendar />, path: "/admin/dashboard/performance" },
-                    ].map((item) => (
+                    {navItems.map((item) => (
                         <li
                             key={item.name}
                             className={activeTab === item.name ? "active" : ""}
                             onClick={() => setActiveTab(item.name)}
                             title={!isOpen ? item.name : ""}
                         >
-                            <Link to={item.path} className="sidebar-link">
-                                <span className="icon">{item.icon}</span>
+                            <NavLink to={item.path} className="sidebar-link">
+                                <span className="icon" aria-hidden="true">{item.icon}</span>
                                 {isOpen && <span className="text">{item.name}</span>}
-                            </Link>
+                            </NavLink>
                         </li>
                     ))}
                 </ul>
             </div>
-        </div>
+        </aside>
     );
 };
 

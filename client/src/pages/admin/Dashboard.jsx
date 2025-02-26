@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import HeaderSection from "../../components/HeaderSection";
-import Sidebar from "../../components/Sidebar";
+import Header from '../../components/Header';
+import Sidebar from '../../components/Sidebar';
+import Footer from "../../components/Footer";
 import "../../styles/styles.scss";
 
 import Users from './UserPage';
@@ -9,35 +10,40 @@ import Finance from './FinancePage';
 import Departments from './DepartmentsPage';
 import Attendance from './AttendancePage';
 import Performance from './Performance';
+import { FiUsers, FiDollarSign, FiBriefcase, FiClock, FiCalendar } from "react-icons/fi";
+import { IoHome } from "react-icons/io5";
 
 const AdminDashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-
     const navigate = useNavigate();
 
     const handleNavigate = (path) => {
         navigate(path);
     };
 
-    const menuItems = [
-        { name: "Users", path: "/admin/dashboard/users", icon: "FiUsers" },
-        { name: "Finance", path: "/admin/dashboard/finance", icon: "FiDollarSign" },
-        { name: "Departments", path: "/admin/dashboard/departments", icon: "FiBriefcase" },
-        { name: "Attendance & Leaves", path: "/admin/dashboard/attendance", icon: "FiClock" },
-        { name: "Performance", path: "/admin/dashboard/performance", icon: "FiCalendar" }
+    const navItems = [
+        { name: "Home", path: "/admin/dashboard/home", icon: <IoHome /> },
+        { name: "Users", path: "/admin/dashboard/users", icon: <FiUsers /> },
+        { name: "Finance", path: "/admin/dashboard/finance", icon: <FiDollarSign /> },
+        { name: "Departments", path: "/admin/dashboard/departments", icon: <FiBriefcase /> },
+        { name: "Attendance & Leaves", path: "/admin/dashboard/attendance", icon: <FiClock /> },
+        { name: "Performance", path: "/admin/dashboard/performance", icon: <FiCalendar /> }
     ];
+
+    const user = { name: "Admin", profilePic: "/assets/profile.jpg" };
 
     return (
         <div className="admin-dashboard-container">
-            <HeaderSection toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} />
+            <Header userRole="admin" isSidebarOpen={isSidebarOpen} toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} />
             <Sidebar
                 isOpen={isSidebarOpen}
                 toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
-                menuItems={menuItems}
-                onNavigate={handleNavigate} />
+                navItems={navItems}
+                user={user}
+            />
             <main className={`main-content ${isSidebarOpen ? "shifted" : ""}`}>
                 <Routes>
-                    <Route path="" element={<DashboardHome />} />
+                    <Route path="home" element={<DashboardHome />} />
                     <Route path="users" element={<Users />} />
                     <Route path="finance" element={<Finance />} />
                     <Route path="departments" element={<Departments />} />
@@ -45,6 +51,7 @@ const AdminDashboard = () => {
                     <Route path="performance" element={<Performance />} />
                 </Routes>
             </main>
+            <Footer user={user} /> {/* Footer Component */}
         </div>
     );
 };

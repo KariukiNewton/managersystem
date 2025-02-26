@@ -1,0 +1,40 @@
+.user-profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--bg-color);
+    padding: 2rem;
+
+    .profile-card {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px var(--box-shadow);
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+
+        .profile-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        p {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            margin: 0.5rem 0;
+
+            strong {
+                color: var(--text-color);
+            }
+        }
+    }
+}
