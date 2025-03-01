@@ -4,9 +4,8 @@ import { FiUser, FiLogOut, FiSettings, FiBell, FiSun, FiMoon, FiChevronLeft } fr
 import { CgDetailsMore } from "react-icons/cg";
 import { ThemeContext } from "../context/ThemeContext";
 import "./_header.scss";
-import UserProfile from "./UserProfile";
 
-const Header = ({ userRole, isSidebarOpen, toggleSidebar }) => {
+const Header = ({ userRole, isSidebarOpen, toggleSidebar, user }) => {
     const [userDropdown, setUserDropdown] = useState(false);
     const [settingsDropdown, setSettingsDropdown] = useState(false);
     const [notifications, setNotifications] = useState(3);
@@ -47,6 +46,16 @@ const Header = ({ userRole, isSidebarOpen, toggleSidebar }) => {
             default:
                 return "Dashboard";
         }
+    };
+
+    const handleViewProfile = () => {
+        if (user && user.id) {
+            // Updated path for new routing structure
+            navigate(`/admin/profile/${user.id}`);
+        } else {
+            navigate("/admin/profile");
+        }
+        setUserDropdown(false);
     };
 
     return (
@@ -97,7 +106,7 @@ const Header = ({ userRole, isSidebarOpen, toggleSidebar }) => {
                     </button>
                     {userDropdown && (
                         <div className="dropdown-menu">
-                            <button className="dropdown-item" onClick={() => navigate("/userProfile")}>
+                            <button className="dropdown-item" onClick={handleViewProfile}>
                                 <FiUser /> View Profile
                             </button>
                             <button className="dropdown-item logout" onClick={handleLogout}>

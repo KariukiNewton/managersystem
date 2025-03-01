@@ -1,39 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from "react";
+import { Routes, Route, useNavigate, Outlet, Link } from 'react-router-dom';
+import Header from '../../components/Header';
+import Sidebar from '../../components/Sidebar';
+import Footer from "../../components/Footer";
+import UserProfile from '../../components/UserProfile';
+import "../../styles/styles.scss";
 
-import Sidebar from './Sidebar';
+import { FiUsers, FiDollarSign, FiBriefcase, FiClock, FiCalendar } from "react-icons/fi";
+import { IoHome } from "react-icons/io5";
+
 import Payroll from './Payroll';
 import EmployeeFinances from './EmployeeFinance';
 import Settings from './Settings';
 import Reports from './Reports';
 import Invoice from './Invoice';
 
-
 const FinanceDashboard = () => {
-    const [companyInfo, setCompanyInfo] = useState({
-        name: "TechCorp Inc.",
-        logo: "/logo.png",
-        address: "123 Tech Avenue, Silicon Valley, CA 94043"
-    });
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+    const user = {
+        id: "FinTech101",
+        name: "Finance Manager",
+        profilePic: "",
+        role: "finance"
+    };
+
+    const navItems = [
+        { name: "Home", path: "/finance/dashboard/home", icon: <IoHome /> },
+        { name: "Payroll", path: "/finance/dashboard/payroll", icon: <IoHome /> },
+        { name: "Employee Finance", path: "/finance/dashboard/employee-finances", icon: <IoHome /> },
+        { name: "Reports", path: "/finance/dashboard/reports", icon: <IoHome /> },
+        { name: "Settings", path: "/finance/dashboard/settings", icon: <IoHome /> },
+        { name: "Invoice", path: "/finance/dashboard/invoice", icon: <IoHome /> }
+    ];
 
     return (
-        <div>
-            <div className="finance-module">
-                <Sidebar companyInfo={companyInfo} />
-                <div className="content-area">
-                    <ToastContainer position="top-right" autoClose={3000} />
-                    <Routes>
-                        <Route path="/" element={<DashboardHome />} />
-                        <Route path="/payroll" element={<Payroll />} />
-                        <Route path="/employee-finances/:id?" element={<EmployeeFinances />} />
-                        <Route path="/reports" element={<Reports />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/invoice/:id" element={<Invoice />} />
-                    </Routes>
-                </div>
-            </div>
+        <div className="finance-dashboard-container">
+            <Header
+                userRole={"finance"}
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
+                user={user}
+            />
+
+            <Sidebar
+                isOpen={isSidebarOpen}
+                toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
+                navItems={navItems}
+                user={user}
+            />
+            <main className={`main-content ${isSidebarOpen ? "shifted" : ""}`}>
+                <Routes>
+                    <Route path="home" element={<DashboardHome />} />
+                    <Route path="payroll" element={<Payroll />} />
+                    <Route path="employee-finances" element={<EmployeeFinances />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="invoice/:id" element={<Invoice />} />
+                </Routes>
+            </main>
+            <Footer user={user}></Footer>
         </div>
     );
 };
@@ -95,13 +121,13 @@ const DashboardHome = () => {
                                     <td>${payment.amount.toLocaleString()}</td>
                                     <td>{payment.date}</td>
                                     <td>
-                                        <Link to={`/invoice/${payment.id}`} className="btn-view">View</Link>
+                                        <Link to={`/finance/dashboard/invoice/${payment.id}`} className="btn-view">View</Link>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                    <Link to="/payroll" className="btn-primary">View All Payments</Link>
+                    <Link to="/finance/dashboard/payroll" className="btn-primary">View All Payments</Link>
                 </div>
 
                 <div className="section">

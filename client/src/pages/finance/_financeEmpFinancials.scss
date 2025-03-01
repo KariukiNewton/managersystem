@@ -1,0 +1,170 @@
+.employee-finances {
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+    }
+}
+
+.finance-container {
+    display: flex;
+    gap: 20px;
+
+    .employee-list {
+        flex: 1;
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px var(--box-shadow);
+
+        .search-bar {
+            margin-bottom: 10px;
+
+            input {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid var(--border-color);
+                border-radius: 5px;
+                background: var(--bg-color);
+                color: var(--text-color);
+            }
+        }
+
+        .employees {
+            list-style: none;
+            padding: 0;
+
+            li {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border-bottom: 1px solid var(--border-color);
+                cursor: pointer;
+                transition: background 0.3s;
+
+                &:hover,
+                &.selected {
+                    background: var(--primary-color);
+                    color: var(--text-light);
+                }
+            }
+        }
+    }
+
+    .employee-details {
+        flex: 2;
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px var(--box-shadow);
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .position {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+
+            h3,
+            h4 {
+                margin-bottom: 10px;
+                color: var(--primary-color);
+            }
+
+            .form-group {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+
+                label {
+                    flex: 1;
+                }
+
+                input {
+                    flex: 2;
+                    padding: 8px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 5px;
+                    background: var(--bg-color);
+                    color: var(--text-color);
+                }
+            }
+
+            .btn-primary {
+                background: var(--primary-color);
+                color: var(--text-light);
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: 0.3s;
+
+                &:hover {
+                    background: var(--primary-color);
+                    filter: brightness(90%);
+                }
+            }
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+
+            th,
+            td {
+                padding: 10px;
+                border: 1px solid var(--border-color);
+                text-align: left;
+            }
+
+            th {
+                background: var(--primary-color);
+                color: var(--text-light);
+            }
+
+            .btn-view {
+                padding: 5px 10px;
+                background: var(--primary-color);
+                color: var(--text-light);
+                border-radius: 5px;
+                text-decoration: none;
+                transition: 0.3s;
+
+                &:hover {
+                    background: var(--primary-color);
+                    filter: brightness(90%);
+                }
+            }
+        }
+    }
+
+    .no-selection {
+        flex: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 2px 5px var(--box-shadow);
+        font-size: 1.2rem;
+        color: var(--secondary-color);
+    }
+}
+
+@media (max-width: 768px) {
+    .finance-container {
+        flex-direction: column;
+    }
+}

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const Settings = () => {
     const [companyInfo, setCompanyInfo] = useState({
@@ -17,16 +18,27 @@ const Settings = () => {
         pensionRate: 5
     });
 
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setCompanyInfo({ ...companyInfo, logo: imageUrl });
+        }
+    };
+
     const saveSettings = () => {
+        localStorage.setItem("companyInfo", JSON.stringify(companyInfo));
+        localStorage.setItem("payrollSettings", JSON.stringify(payrollSettings));
         toast.success("Settings saved successfully!");
     };
 
     return (
         <div className="settings">
-            <h1>Finance Settings</h1>
+            <h1 className="settings-title">Finance Settings</h1>
 
             <div className="settings-section">
                 <h2>Company Information</h2>
+
                 <div className="form-group">
                     <label>Company Name:</label>
                     <input
@@ -40,7 +52,7 @@ const Settings = () => {
                     <label>Company Logo:</label>
                     <div className="logo-upload">
                         <img src={companyInfo.logo} alt="Company Logo" className="preview-logo" />
-                        <button className="btn-upload">Upload New Logo</button>
+                        <input type="file" accept="image/*" onChange={handleFileUpload} />
                     </div>
                 </div>
 
@@ -73,6 +85,7 @@ const Settings = () => {
 
             <div className="settings-section">
                 <h2>Payroll Settings</h2>
+
                 <div className="form-group">
                     <label>Default Pay Day:</label>
                     <input
@@ -131,7 +144,7 @@ const Settings = () => {
                 </div>
             </div>
 
-            <button className="btn-primary" onClick={saveSettings}>Save Settings</button>
+            <button className="btn-primary save-btn" onClick={saveSettings}>Save Settings</button>
         </div>
     );
 };

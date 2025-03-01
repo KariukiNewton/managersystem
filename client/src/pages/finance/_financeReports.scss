@@ -1,0 +1,126 @@
+.reports {
+    padding: 2rem;
+    background: var(--card-bg);
+    box-shadow: 0 4px 6px var(--box-shadow);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+
+    &__title {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    &__controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+
+            label {
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+            }
+
+            select {
+                padding: 0.5rem;
+                border: 1px solid var(--border-color);
+                border-radius: 5px;
+                background: var(--bg-color);
+                color: var(--text-color);
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__preview {
+        text-align: center;
+        background: var(--bg-color);
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px var(--box-shadow);
+    }
+
+    &__subtitle {
+        font-size: 1.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+
+    &__content {
+        .summary-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+
+            .summary-box {
+                background: var(--card-bg);
+                padding: 1rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px var(--box-shadow);
+                text-align: center;
+
+                h3 {
+                    font-size: 1.2rem;
+                    margin-bottom: 0.5rem;
+                }
+
+                .value {
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            }
+        }
+
+        .chart-placeholder {
+            margin: 2rem 0;
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--box-shadow);
+
+            p {
+                font-size: 1.2rem;
+                color: var(--secondary-color);
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+
+        .btn-export {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+
+            &:first-child {
+                background: #e74c3c;
+                color: white;
+            }
+
+            &:last-child {
+                background: #27ae60;
+                color: white;
+            }
+
+            &:hover {
+                filter: brightness(1.1);
+            }
+        }
+    }
+}

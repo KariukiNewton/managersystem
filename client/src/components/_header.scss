@@ -1,5 +1,5 @@
 .header {
-    position: fixed;
+    position: sticky;
     top: 0;
     right: 0;
     left: 60px; // Default for collapsed sidebar
@@ -11,7 +11,7 @@
     background-color: var(--card-bg);
     box-shadow: 0px 2px 4px var(--box-shadow);
     transition: all 0.3s ease;
-    z-index: 999;
+    z-index: 1000;
     width: calc(100% - 60px);
 
     &.shifted {
