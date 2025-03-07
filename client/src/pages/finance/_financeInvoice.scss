@@ -1,0 +1,112 @@
+// Invoice Page Styles
+.invoice-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: var(--bg-color);
+    color: var(--text-color);
+
+    .invoice {
+        width: 80%;
+        max-width: 900px;
+        background: var(--card-bg);
+        box-shadow: 0 4px 8px var(--box-shadow);
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+
+            .company-details {
+                display: flex;
+                align-items: center;
+
+                .invoice-logo {
+                    width: 60px;
+                    height: auto;
+                    margin-right: 15px;
+                }
+            }
+        }
+
+        .employee-details,
+        .payment-details {
+            margin: 20px 0;
+
+            .details-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+
+            td {
+                padding: 10px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .total-row {
+                font-weight: bold;
+                background: var(--secondary-color);
+                color: var(--text-light);
+            }
+        }
+
+        .net-pay {
+            text-align: center;
+            padding: 15px;
+            background: var(--primary-color);
+            color: var(--text-light);
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    }
+
+    .invoice-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-light);
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    }
+}
+
+// Print styles
+@media print {
+    .invoice-actions {
+        display: none;
+    }
+}

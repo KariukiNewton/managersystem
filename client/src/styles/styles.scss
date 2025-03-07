@@ -1,6 +1,9 @@
 // Import required modules
 @use "sass:color";
 
+
+@use "../auth/login";
+
 // Import Component-Specific SCSS
 @use "../components/header";
 @use "../components/footer";
@@ -8,10 +11,9 @@
 @use "../components/sidebar";
 
 
-
-
 @use "../pages/admin/admDashboard";
-@use "../auth/login";
+@use "../pages/admin/admDepartments";
+
 
 
 @use "../pages/finance/financeDashboard";

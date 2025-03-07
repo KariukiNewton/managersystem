@@ -1,12 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import "../../styles/styles.scss";
 
-const Invoice = () => {
-    const [invoiceData, setInvoiceData] = useState({
-        employee: mockEmployees[0],
-        payPeriod: "February 1-28, 2025",
-        payDate: "February 28, 2025",
-        paymentMethod: "Direct Deposit"
-    });
+const Invoice = ({ employee: propEmployee }) => {
+    const { employeeId } = useParams();
+    const dummyEmployee = {
+        name: "John Doe",
+        position: "Software Engineer",
+        department: "IT",
+        basicSalary: 5000,
+        allowances: { housing: 1000, transport: 500 },
+        deductions: { tax: 800, insurance: 200 }
+    };
+    const [employee, setEmployee] = useState(propEmployee || dummyEmployee);
+    const [loading, setLoading] = useState(false); //!propEmployee && !employeeId
+
+    useEffect(() => {
+        if (!propEmployee && employeeId) {
+            fetch(`/api/employees/${employeeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setEmployee(data);
+                    setLoading(false);
+                })
+                .catch(error => console.error("Error fetching employee data:", error));
+        }
+    }, [employeeId, propEmployee]);
 
     const companyInfo = {
         name: "TechCorp Inc.",
@@ -16,9 +35,17 @@ const Invoice = () => {
         email: "finance@techcorp.com"
     };
 
-    const totalAllowances = Object.values(invoiceData.employee.allowances).reduce((sum, val) => sum + val, 0);
-    const totalDeductions = Object.values(invoiceData.employee.deductions).reduce((sum, val) => sum + val, 0);
-    const grossPay = invoiceData.employee.basicSalary + totalAllowances;
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!employee) {
+        return <div>Error: Employee not found</div>;
+    }
+
+    const totalAllowances = Object.values(employee.allowances).reduce((sum, val) => sum + val, 0);
+    const totalDeductions = Object.values(employee.deductions).reduce((sum, val) => sum + val, 0);
+    const grossPay = employee.basicSalary + totalAllowances;
     const netPay = grossPay - totalDeductions;
 
     const printInvoice = () => {
@@ -52,8 +79,8 @@ const Invoice = () => {
                     </div>
                     <div className="invoice-title">
                         <h1>Payslip</h1>
-                        <p>Pay Period: {invoiceData.payPeriod}</p>
-                        <p>Pay Date: {invoiceData.payDate}</p>
+                        <p>Pay Period: February 1-28, 2025</p>
+                        <p>Pay Date: February 28, 2025</p>
                     </div>
                 </div>
 
@@ -61,12 +88,12 @@ const Invoice = () => {
                     <h3>Employee Information</h3>
                     <div className="details-grid">
                         <div>
-                            <p><strong>Name:</strong> {invoiceData.employee.name}</p>
-                            <p><strong>Position:</strong> {invoiceData.employee.position}</p>
+                            <p><strong>Name:</strong> {employee.name}</p>
+                            <p><strong>Position:</strong> {employee.position}</p>
                         </div>
                         <div>
-                            <p><strong>Department:</strong> {invoiceData.employee.department}</p>
-                            <p><strong>Payment Method:</strong> {invoiceData.paymentMethod}</p>
+                            <p><strong>Department:</strong> {employee.department}</p>
+                            <p><strong>Payment Method:</strong> Direct Deposit</p>
                         </div>
                     </div>
                 </div>
@@ -78,9 +105,9 @@ const Invoice = () => {
                             <tbody>
                                 <tr>
                                     <td>Basic Salary</td>
-                                    <td>${invoiceData.employee.basicSalary.toLocaleString()}</td>
+                                    <td>${employee.basicSalary.toLocaleString()}</td>
                                 </tr>
-                                {Object.entries(invoiceData.employee.allowances).map(([key, value]) => (
+                                {Object.entries(employee.allowances).map(([key, value]) => (
                                     <tr key={key}>
                                         <td>{key.charAt(0).toUpperCase() + key.slice(1)} Allowance</td>
                                         <td>${value.toLocaleString()}</td>
@@ -98,7 +125,7 @@ const Invoice = () => {
                         <h3>Deductions</h3>
                         <table className="invoice-table">
                             <tbody>
-                                {Object.entries(invoiceData.employee.deductions).map(([key, value]) => (
+                                {Object.entries(employee.deductions).map(([key, value]) => (
                                     <tr key={key}>
                                         <td>{key.charAt(0).toUpperCase() + key.slice(1)}</td>
                                         <td>${value.toLocaleString()}</td>
@@ -117,7 +144,7 @@ const Invoice = () => {
                     <h3>Net Pay</h3>
                     <div className="net-pay-amount">${netPay.toLocaleString()}</div>
                     <p className="payment-note">
-                        Payment processed via {invoiceData.paymentMethod} on {invoiceData.payDate}
+                        Payment processed via Direct Deposit on February 28, 2025
                     </p>
                 </div>
 

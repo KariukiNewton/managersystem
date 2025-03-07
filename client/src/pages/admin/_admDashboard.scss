@@ -17,10 +17,11 @@
         margin-top: 90px; // Space for fixed header
         padding: 2rem;
         padding-top: 80px;
-        flex: 1;
+        flex-grow: 1;
         min-height: 800px;
         transition: margin-left 0.3s ease;
         z-index: 1;
+        overflow-y: auto;
 
         &.shifted {
             margin-left: 250px; // Adjust margin when sidebar expands

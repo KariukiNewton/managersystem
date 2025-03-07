@@ -6,6 +6,7 @@ dotenv = require('dotenv').config();
 // Importing routes
 const authRoutes = require("./src/routes/authRoute.js");
 const userRoutes = require("./src/routes/userRoutes.js");
+const departmentRoutes = require("./src/routes/departmentRoutes.js");
 //const protectedRoutes = require("./routes/protectedRoutes.js");
 
 const app = express();
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 // Authentication routes (login, register)
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+app.use('/departments', departmentRoutes);
 
 // Protected routes (admin dashboard, finance dashboard, employee dashboard)
 //app.use("/", protectedRoutes);

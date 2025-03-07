@@ -1,12 +1,10 @@
 const User = require("../models/Users.js");
+const Department = require("../models/DepartmentsModel.js");
 
-// Get all users
+// Get all users with department name
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find(); // Fetch all users
-        if (!Array.isArray(users)) {
-            return res.status(500).json({ error: "Unexpected data format" });
-        }
+        const users = await User.find().populate("department", "name"); // Populate department name
         res.status(200).json(users);
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -18,9 +16,25 @@ const getAllUsers = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true });
+        const { department, ...otherUpdates } = req.body;
 
-        if (!updatedUser) return res.status(404).json({ message: "User not found" });
+        const existingUser = await User.findById(id);
+        if (!existingUser) return res.status(404).json({ message: "User not found" });
+
+        // If department changes, update employee count
+        if (department && department !== String(existingUser.department)) {
+            const oldDepartment = await Department.findById(existingUser.department);
+            const newDepartment = await Department.findById(department);
+
+            if (oldDepartment) {
+                await Department.findByIdAndUpdate(oldDepartment._id, { $inc: { employeeCount: -1 } });
+            }
+            if (newDepartment) {
+                await Department.findByIdAndUpdate(newDepartment._id, { $inc: { employeeCount: 1 } });
+            }
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(id, { department, ...otherUpdates }, { new: true }).populate("department", "name");
 
         res.status(200).json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {
@@ -35,6 +49,14 @@ const deleteUser = async (req, res) => {
         const deletedUser = await User.findByIdAndDelete(id);
 
         if (!deletedUser) return res.status(404).json({ message: "User not found" });
+
+        // Decrement employee count in department
+        if (deletedUser.department) {
+            const department = await Department.findById(deletedUser.department);
+            if (department) {
+                await Department.findByIdAndUpdate(department._id, { $inc: { employeeCount: -1 } });
+            }
+        }
 
         res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {

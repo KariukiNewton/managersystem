@@ -6,14 +6,18 @@ import Footer from "../../components/Footer";
 import UserProfile from '../../components/UserProfile';
 import "../../styles/styles.scss";
 
-import { FiUsers, FiDollarSign, FiBriefcase, FiClock, FiCalendar } from "react-icons/fi";
+import { FaMoneyBillWave } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
+import { GrUserWorker } from "react-icons/gr";
+import { TbReportSearch } from "react-icons/tb";
+import { IoSettings } from "react-icons/io5";
 
 import Payroll from './Payroll';
 import EmployeeFinances from './EmployeeFinance';
 import Settings from './Settings';
 import Reports from './Reports';
 import Invoice from './Invoice';
+import { FaFileInvoice } from "react-icons/fa6";
 
 const FinanceDashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -27,11 +31,11 @@ const FinanceDashboard = () => {
 
     const navItems = [
         { name: "Home", path: "/finance/dashboard/home", icon: <IoHome /> },
-        { name: "Payroll", path: "/finance/dashboard/payroll", icon: <IoHome /> },
-        { name: "Employee Finance", path: "/finance/dashboard/employee-finances", icon: <IoHome /> },
-        { name: "Reports", path: "/finance/dashboard/reports", icon: <IoHome /> },
-        { name: "Settings", path: "/finance/dashboard/settings", icon: <IoHome /> },
-        { name: "Invoice", path: "/finance/dashboard/invoice", icon: <IoHome /> }
+        { name: "Payroll", path: "/finance/dashboard/payroll", icon: <FaMoneyBillWave /> },
+        { name: "Employee Finance", path: "/finance/dashboard/employee-finances", icon: <GrUserWorker /> },
+        { name: "Reports", path: "/finance/dashboard/reports", icon: <TbReportSearch /> },
+        { name: "Settings", path: "/finance/dashboard/settings", icon: <IoSettings /> },
+        { name: "Invoice", path: "/finance/dashboard/invoice", icon: <FaFileInvoice /> }
     ];
 
     return (
@@ -51,12 +55,13 @@ const FinanceDashboard = () => {
             />
             <main className={`main-content ${isSidebarOpen ? "shifted" : ""}`}>
                 <Routes>
+                    <Route index element={<DashboardHome />} />
                     <Route path="home" element={<DashboardHome />} />
                     <Route path="payroll" element={<Payroll />} />
                     <Route path="employee-finances" element={<EmployeeFinances />} />
                     <Route path="reports" element={<Reports />} />
                     <Route path="settings" element={<Settings />} />
-                    <Route path="invoice/:id" element={<Invoice />} />
+                    <Route path="invoice" element={<Invoice />} />
                 </Routes>
             </main>
             <Footer user={user}></Footer>

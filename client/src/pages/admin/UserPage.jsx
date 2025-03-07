@@ -7,6 +7,7 @@ const { Option } = Select;
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -14,25 +15,39 @@ const UsersPage = () => {
 
     useEffect(() => {
         fetchUsers();
+        fetchDepartments();
     }, []);
 
     const fetchUsers = async () => {
         setLoading(true);
         try {
             const response = await axios.get('/users');
-
-            // Ensure response.data is an array
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
             } else {
                 console.error('Error: Expected an array but got', response.data);
-                setUsers([]); // Fallback to an empty array
+                setUsers([]);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
-            setUsers([]); // Ensure `users` is always an array
+            setUsers([]);
         }
         setLoading(false);
+    };
+
+    const fetchDepartments = async () => {
+        try {
+            const response = await axios.get('/departments'); // Adjust API endpoint if necessary
+            if (Array.isArray(response.data)) {
+                setDepartments(response.data);
+            } else {
+                console.error('Error: Expected an array but got', response.data);
+                setDepartments([]);
+            }
+        } catch (error) {
+            console.error('Error fetching departments:', error);
+            setDepartments([]);
+        }
     };
 
     const handleAddUser = () => {
@@ -59,7 +74,7 @@ const UsersPage = () => {
     const handleFormSubmit = async (values) => {
         try {
             if (selectedUser) {
-                await axios.put(`/user/${selectedUser._id}`, values);
+                await axios.put(`/users/${selectedUser._id}`, values);
                 toast.success('User updated successfully');
             } else {
                 await axios.post('/auth/register', values);
@@ -74,46 +89,18 @@ const UsersPage = () => {
     };
 
     const columns = [
-        {
-            title: 'User ID',
-            dataIndex: 'userId',
-            key: 'userId',
-        },
-        {
-            title: 'Username',
-            dataIndex: 'username',
-            key: 'username',
-        },
-        {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
-        },
-        {
-            title: 'Role',
-            dataIndex: 'role',
-            key: 'role',
-        },
-        {
-            title: 'Department',
-            dataIndex: 'department',
-            key: 'department',
-        },
-        {
-            title: 'Age',
-            dataIndex: 'age',
-            key: 'age',
-        },
-        {
-            title: 'Gender',
-            dataIndex: 'gender',
-            key: 'gender',
-        },
+        { title: 'User ID', dataIndex: 'userId', key: 'userId' },
+        { title: 'Username', dataIndex: 'username', key: 'username' },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
+        { title: 'Role', dataIndex: 'role', key: 'role' },
+        { title: 'Department', dataIndex: 'department', key: 'department', render: (department) => department?.name || 'N/A' },
+        { title: 'Age', dataIndex: 'age', key: 'age' },
+        { title: 'Gender', dataIndex: 'gender', key: 'gender' },
         {
             title: 'Last Login',
             dataIndex: 'lastLogin',
             key: 'lastLogin',
-            render: (text) => (text ? new Date(text).toLocaleString() : 'Never'),
+            render: (text) => (text ? new Date(text).toLocaleString() : 'Never')
         },
         {
             title: 'Actions',
@@ -153,8 +140,12 @@ const UsersPage = () => {
                             <Option value="employee">Employee</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="department" label="Department">
-                        <Input />
+                    <Form.Item name="department" label="Department" rules={[{ required: true, message: 'Please select department' }]}>
+                        <Select placeholder="Select a department">
+                            {departments.map((dept) => (
+                                <Option key={dept._id} value={dept.name}>{dept.name}</Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                     <Form.Item name="age" label="Age" rules={[{ required: true, message: 'Please enter age' }]}>
                         <Input type="number" />

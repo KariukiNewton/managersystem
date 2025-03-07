@@ -1,4 +1,5 @@
 const UserModel = require("../models/Users.js");
+const DepartmentModel = require("../models/DepartmentsModel.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -29,7 +30,17 @@ const registerUser = async (req, res) => {
     // Generate a unique userId based on role
     const rolePrefix = role.charAt(0).toUpperCase(); // A for admin, F for finance, E for employee
     const userCount = await UserModel.countDocuments({ role });
-    const userId = `${rolePrefix}${String(userCount + 1).padStart(4, '0')}`; // Format: A0001, F0001, E0001
+    const userId = `${rolePrefix}${String(userCount + 1).padStart(4, "0")}`; // Format: A0001, F0001, E0001
+
+    // Find the department by name and retrieve its ObjectId
+    let departmentId = null;
+    if (department && department !== "Not Assigned") {
+      const departmentRecord = await DepartmentModel.findOne({ name: department });
+      if (!departmentRecord) {
+        return res.status(400).json({ message: "Department not found" });
+      }
+      departmentId = departmentRecord._id; // Assign ObjectId
+    }
 
     // Create and save new user
     const newUser = new UserModel({
@@ -38,13 +49,18 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      department: department || "Not Assigned",
+      department: departmentId, // Save ObjectId or null
       age: age || null,
       gender: gender || "Not Specified",
       lastLogin: null, // User hasn't logged in yet
     });
 
     await newUser.save();
+
+    // Increment department employee count if assigned
+    if (departmentId) {
+      await DepartmentModel.findByIdAndUpdate(departmentId, { $inc: { employeeCount: 1 } });
+    }
 
     res.status(201).json({ message: "User registered successfully", userId });
   } catch (error) {

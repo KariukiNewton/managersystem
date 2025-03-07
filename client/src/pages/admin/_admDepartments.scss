@@ -1,0 +1,60 @@
+// Departments Page Styles
+.departments-page {
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+// Table Styling
+.ant-table {
+    background: var(--card-bg);
+    box-shadow: 0 2px 8px var(--box-shadow);
+    border-radius: 8px;
+}
+
+.ant-table-thead>tr>th {
+    background: var(--primary-color);
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+.ant-table-tbody>tr>td {
+    border-bottom: 1px solid var(--border-color);
+}
+
+// Buttons
+.button-container {
+    margin-bottom: 16px;
+}
+
+.ant-btn-primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+
+    &:hover {
+        filter: brightness(90%);
+    }
+}
+
+.ant-btn-danger {
+    background: red;
+    border-color: red;
+
+    &:hover {
+        filter: brightness(90%);
+    }
+}
+
+// Modal Styling
+.ant-modal {
+    .ant-modal-content {
+        background: var(--card-bg);
+        color: var(--text-color);
+    }
+
+    .ant-modal-header {
+        background: var(--primary-color);
+        color: var(--text-light);
+    }
+}
