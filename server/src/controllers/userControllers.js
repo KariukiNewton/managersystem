@@ -34,7 +34,15 @@ const updateUser = async (req, res) => {
             }
         }
 
-        const updatedUser = await User.findByIdAndUpdate(id, { department, ...otherUpdates }, { new: true }).populate("department", "name");
+        // Ensure joinDate is set if it's missing
+        if (!existingUser.joinDate) {
+            otherUpdates.joinDate = new Date();
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(id,
+            { department, ...otherUpdates },
+            { new: true }
+        ).populate("department", "name");
 
         res.status(200).json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {

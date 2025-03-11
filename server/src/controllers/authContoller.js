@@ -1,5 +1,6 @@
 const UserModel = require("../models/Users.js");
 const DepartmentModel = require("../models/DepartmentsModel.js");
+const PayrollModel = require("../models/payrollModel.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -42,6 +43,9 @@ const registerUser = async (req, res) => {
       departmentId = departmentRecord._id; // Assign ObjectId
     }
 
+    // ✅ Set joinDate explicitly
+    const joinDate = new Date();
+
     // Create and save new user
     const newUser = new UserModel({
       userId,
@@ -53,6 +57,7 @@ const registerUser = async (req, res) => {
       age: age || null,
       gender: gender || "Not Specified",
       lastLogin: null, // User hasn't logged in yet
+      joinDate, // ✅ Ensure joinDate is explicitly set
     });
 
     await newUser.save();
@@ -61,6 +66,26 @@ const registerUser = async (req, res) => {
     if (departmentId) {
       await DepartmentModel.findByIdAndUpdate(departmentId, { $inc: { employeeCount: 1 } });
     }
+
+    // ✅ Create payroll for all users 
+    const newPayroll = new PayrollModel({
+      employee: newUser._id, // Link payroll to user
+      department: departmentId,
+      joinDate: newUser.joinDate,
+      basicSalary: 0, // Default, can be updated later
+      allowances: {
+        housing: 0,
+        transport: 0,
+        medical: 0,
+      },
+      deductions: {
+        tax: 0,
+        insurance: 0,
+        pension: 0,
+      },
+    });
+
+    await newPayroll.save();
 
     res.status(201).json({ message: "User registered successfully", userId });
   } catch (error) {
@@ -84,11 +109,16 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
 
+    //Trim password
+    const trimmedPassword = password.trim();
+
     // Compare password with the hashed password in DB
-    const isMatch = await bcrypt.compare(password.trim(), user.password.trim());
-    console.log("Entered password:", password);
+    const isMatch = await bcrypt.compare(trimmedPassword, user.password);
+
+    console.log("Entered password:", trimmedPassword);
     console.log("Stored hashed password:", user.password);
     console.log("Password match result:", isMatch);
+
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid user ID or password" });
     }

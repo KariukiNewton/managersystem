@@ -9,6 +9,7 @@ export default defineConfig({
       '/users': 'http://localhost:5000',
       '/auth': 'http://localhost:5000',
       '/departments': 'http://localhost:5000',
+      "/payroll": "http://localhost:5000",
     },
   },
 })
