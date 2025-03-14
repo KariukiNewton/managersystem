@@ -39,3 +39,13 @@ const Footer = ({ user }) => {
 };
 
 export default Footer;
+
+
+
+
+{/*AttendancePage.jsx     # Check-in/out functionality and status
+        ├── LeaveRequests.jsx      # Form to submit leave requests to admin
+        ├── FinanceDetails.jsx     # View personal invoices and financial info
+        ├── DepartmentTasks.jsx    # View assigned tasks and department info
+        ├── PerformancePage.jsx    # Performance metrics and reviews
+        ├── Announcements.jsx   */}

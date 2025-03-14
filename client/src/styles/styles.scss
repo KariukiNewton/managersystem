@@ -24,7 +24,12 @@
 @use "../pages/finance/financeSettings";
 
 
-
+@use "../pages/employee/empAnnouncements";
+@use "../pages/employee/empDashboard";
+@use "../pages/employee/empDepartmentTasks";
+@use "../pages/employee/empFinanceDetails";
+@use "../pages/employee/empLeaveRequests";
+@use "../pages/employee/empPerformancePage";
 
 // Theme Variables using CSS Variables
 :root {
