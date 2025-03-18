@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import UserContext from "../context/UserContext";
 import axios from "axios";
+//const { setUser } = useContext(UserContext);
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; // Import toastify
+
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -21,6 +24,8 @@ const Login = () => {
             const response = await axios.post("/auth/login", formData);
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("user", JSON.stringify(response.data.user));
+
+            //setUser(response.data.user);
 
             toast.success("Login successful!"); // Success notification
 

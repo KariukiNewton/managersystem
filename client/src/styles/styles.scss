@@ -1,7 +1,6 @@
 // Import required modules
 @use "sass:color";
 
-
 @use "../auth/login";
 
 // Import Component-Specific SCSS
@@ -29,7 +28,7 @@
 @use "../pages/employee/empDepartmentTasks";
 @use "../pages/employee/empFinanceDetails";
 @use "../pages/employee/empLeaveRequests";
-@use "../pages/employee/empPerformancePage";
+@use "../pages/employee/empAttendance";
 
 // Theme Variables using CSS Variables
 :root {

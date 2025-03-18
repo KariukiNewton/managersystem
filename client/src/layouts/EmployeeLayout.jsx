@@ -4,16 +4,17 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from "../components/Footer";
 import UserContext from "../context/UserContext";
-import { FaMoneyBillWave, FaFileInvoice } from "react-icons/fa";
-import { IoHome, IoSettings } from "react-icons/io5";
-import { GrUserWorker } from "react-icons/gr";
-import { TbReportSearch } from "react-icons/tb";
+import { IoHome } from "react-icons/io5";
+import { FcLeave, FcDepartment } from "react-icons/fc";
+import { FaMoneyBillWave } from "react-icons/fa";
+import { CgPerformance } from "react-icons/cg";
+import { MdAnnouncement } from "react-icons/md";
 import "../styles/styles.scss";
 
 const generateAvatar = (name) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=128`;
 
-const FinanceLayout = () => {
+const EmployeeLayout = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
@@ -28,36 +29,33 @@ const FinanceLayout = () => {
     }, [user, setUser]);
 
     useEffect(() => {
-        console.log("User in FinanceLayout:", user); // Debugging
-        if (user === null) return; // Avoid unnecessary redirects
+        console.log("User in EmployeeLayout:", user); // Debugging
+        if (user === undefined) return; // Avoid unnecessary redirects
         if (!user) {
             navigate("/login", { replace: true });
         }
     }, [user, navigate]);
 
     const navItems = [
-        { name: "Home", path: "/finance/dashboard/home", icon: <IoHome /> },
-        { name: "Payroll", path: "/finance/dashboard/payroll", icon: <FaMoneyBillWave /> },
-        { name: "Employee Finance", path: "/finance/dashboard/employee-finances", icon: <GrUserWorker /> },
-        { name: "Reports", path: "/finance/dashboard/reports", icon: <TbReportSearch /> },
-        { name: "Settings", path: "/finance/dashboard/settings", icon: <IoSettings /> },
-        { name: "Invoice", path: "/finance/dashboard/invoice", icon: <FaFileInvoice /> }
+        { name: "Home", path: "/employee/dashboard/home", icon: <IoHome /> },
+        { name: "Attendance", path: "/employee/dashboard/attendance", icon: <CgPerformance /> },
+        { name: "Leave Requests", path: "/employee/dashboard/leave-request", icon: <FcLeave /> },
+        { name: "Finance Details", path: "/employee/dashboard/finance-details", icon: <FaMoneyBillWave /> },
+        { name: "Department Tasks", path: "/employee/dashboard/department-tasks", icon: <FcDepartment /> },
+        { name: "Announcements", path: "/employee/dashboard/announcements", icon: <MdAnnouncement /> }
     ];
 
     return (
-        <div className="finance-dashboard-container">
+        <div className="employee-dashboard-container">
             <Header
                 userRole={user?.role}
                 isSidebarOpen={isSidebarOpen}
                 toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
-
             />
-
             <Sidebar
                 isOpen={isSidebarOpen}
                 toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
                 navItems={navItems}
-
             />
             <main className={`main-content ${isSidebarOpen ? "shifted" : ""}`}>
                 <Outlet />
@@ -67,4 +65,4 @@ const FinanceLayout = () => {
     );
 };
 
-export default FinanceLayout;
+export default EmployeeLayout;

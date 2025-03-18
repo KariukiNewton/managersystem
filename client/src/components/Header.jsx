@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { FiUser, FiLogOut, FiSettings, FiBell, FiSun, FiMoon, FiChevronLeft } from "react-icons/fi";
 import { CgDetailsMore } from "react-icons/cg";
 import { ThemeContext } from "../context/ThemeContext";
+import UserContext from "../context/UserContext";
 import "./_header.scss";
 
-const Header = ({ userRole, isSidebarOpen, toggleSidebar, user }) => {
+const Header = ({ userRole, isSidebarOpen, toggleSidebar }) => {
     const [userDropdown, setUserDropdown] = useState(false);
     const [settingsDropdown, setSettingsDropdown] = useState(false);
     const [notifications, setNotifications] = useState(3);
+
     const { theme, toggleTheme } = useContext(ThemeContext);
+    const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     const userDropdownRef = useRef(null);
@@ -32,6 +35,8 @@ const Header = ({ userRole, isSidebarOpen, toggleSidebar, user }) => {
 
     const handleLogout = () => {
         console.log("Logging out...");
+        setUser(null);
+        localStorage.removeItem("user");
         navigate("/login");
     };
 
@@ -48,12 +53,18 @@ const Header = ({ userRole, isSidebarOpen, toggleSidebar, user }) => {
         }
     };
 
+    const roleRoutes = {
+        admin: "admin",
+        finance: "finance",
+        employee: "employee"
+    };
+
     const handleViewProfile = () => {
-        if (user && user.id) {
-            // Updated path for new routing structure
-            navigate(`/admin/profile/${user.id}`);
+        const rolePath = roleRoutes[user?.role] || "employee"; // Default to employee
+        if (user?.id) {
+            navigate(`/${rolePath}/profile/${user.id}`);
         } else {
-            navigate("/admin/profile");
+            navigate(`/${rolePath}/profile`);
         }
         setUserDropdown(false);
     };

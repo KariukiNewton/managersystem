@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useLocation } from "react-router-dom";
+import UserContext from "../context/UserContext"; // Import UserContext
 import "./_footer.scss";
 
-const Footer = ({ user }) => {
+const Footer = () => {
     const location = useLocation();
+    const { user } = useContext(UserContext); // Get user from context
 
     // Extract module name from the path (e.g., "finance" from "/admin/dashboard/finance")
     const moduleName = location.pathname.split("/").pop();
@@ -39,13 +41,3 @@ const Footer = ({ user }) => {
 };
 
 export default Footer;
-
-
-
-
-{/*AttendancePage.jsx     # Check-in/out functionality and status
-        ├── LeaveRequests.jsx      # Form to submit leave requests to admin
-        ├── FinanceDetails.jsx     # View personal invoices and financial info
-        ├── DepartmentTasks.jsx    # View assigned tasks and department info
-        ├── PerformancePage.jsx    # Performance metrics and reviews
-        ├── Announcements.jsx   */}

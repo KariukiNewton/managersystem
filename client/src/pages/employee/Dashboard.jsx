@@ -1,86 +1,32 @@
-import React, { useState } from "react";
-import { Routes, Route, useNavigate, Outlet, Link } from 'react-router-dom';
-import Header from '../../components/Header';
-import Sidebar from '../../components/Sidebar';
-import Footer from "../../components/Footer";
-import UserProfile from '../../components/UserProfile';
-import "../../styles/styles.scss";
-
-import { IoHome } from "react-icons/io5";
-import { FcLeave } from "react-icons/fc";
-import { FaMoneyBillWave } from "react-icons/fa";
-import { FcDepartment } from "react-icons/fc";
-import { CgPerformance } from "react-icons/cg";
-import { MdAnnouncement } from "react-icons/md";
-
+import React from "react";
+import { useContext, useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 import LeaveRequest from "./LeaveRequests";
 import FinanceDetails from "./FinanceDetails";
 import DepartmentTasks from "./DepartmentTasks";
-import PerformancePage from "./PerformancePage";
+import AttendancePage from "./Attendance";
 import Announcements from "./Announcements";
 
+import UserContext from "../../context/UserContext";
+//import UserProfile from "../../components/UserProfile";
+import "../../styles/styles.scss";
+
 const EmployeeDashboard = () => {
-    const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-    const user = {
-        id: "FinTech101",
-        name: "Employee",
-        profilePic: "",
-        role: "employee"
-    };
-
-    const navItems = [
-        { name: "Home", path: "/employee/dashboard/home", icon: <IoHome /> },
-        { name: "Leave Requests", path: "/employee/dashboard/leave-request", icon: <FcLeave /> },
-        { name: "Finance Details", path: "/employee/dashboard/finance-details", icon: <FaMoneyBillWave /> },
-        { name: "Department Tasks", path: "/employee/dashboard/department-tasks", icon: <FcDepartment /> },
-        { name: "Performance", path: "/employee/dashboard/performance", icon: <CgPerformance /> },
-        { name: "Announcements", path: "/employee/dashboard/announcements", icon: <MdAnnouncement /> }
-    ];
-
     return (
-        <div className="employee-dashboard-container">
-            <Header
-                userRole={"employee"}
-                isSidebarOpen={isSidebarOpen}
-                toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
-                user={user}
-            />
-
-            <Sidebar
-                isOpen={isSidebarOpen}
-                toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
-                navItems={navItems}
-                user={user}
-            />
-
-            <main className={`main-content ${isSidebarOpen ? "shifted" : ""}`}>
-                <Routes>
-                    <Route index element={<DashboardHome />} />
-                    <Route path="leave-request" element={<LeaveRequest />} />
-                    <Route path="finance-details" element={<FinanceDetails />} />
-                    <Route path="department-tasks" element={<DepartmentTasks />} />
-                    <Route path="performance" element={<PerformancePage />} />
-                    <Route path="announcements" element={<Announcements />} />
-
-                </Routes>
-            </main>
-
-            <Footer user={user} />
-
-        </div>
+        <Routes>
+            <Route index element={<DashboardHome />} />
+            <Route path="home" element={<DashboardHome />} />
+            <Route path="attendance" element={<AttendancePage />} />
+            <Route path="leave-request" element={<LeaveRequest />} />
+            <Route path="finance-details" element={<FinanceDetails />} />
+            <Route path="department-tasks" element={<DepartmentTasks />} />
+            <Route path="announcements" element={<Announcements />} />
+        </Routes>
     );
 };
 
 const DashboardHome = () => {
-    // Mock data - would be fetched from API in production
-    const [userData, setUserData] = useState({
-        name: 'John Doe',
-        position: 'Senior Developer',
-        department: 'IT Department',
-        employeeId: 'EMP-2023-001',
-        avatar: '/assets/profile.jpg'
-    });
+    const { user } = useContext(UserContext); // Get user from context
 
     const [stats, setStats] = useState({
         attendance: { present: 18, absent: 2, late: 1 },
@@ -105,6 +51,30 @@ const DashboardHome = () => {
         }
     ]);
 
+    if (!user) {
+        return <p>Loading user data...</p>;
+    }
+
+    const generateAvatar = (name) => {
+        const initials = name
+            ? name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+            : "U";
+        return `https://ui-avatars.com/api/?name=${initials}&background=random&color=fff&size=128`;
+    };
+
+    const userData = {
+        name: user.username,
+        role: user.role, // Using role instead of position
+        department: user.department,
+        employeeId: user.id, // Using user.id instead of employeeId
+        avatar: user.avatar || generateAvatar(user.username)
+    };
+
+
     // Sample events for calendar
     const calendarEvents = [
         { id: 1, title: 'Team Meeting', date: '2025-03-15', type: 'meeting' },
@@ -126,10 +96,10 @@ const DashboardHome = () => {
                 <div className="greeting">
                     <h1>Welcome back, {userData.name}</h1>
                     <p className="date">{currentDate}</p>
-                    <p className="employee-info">{userData.position} | {userData.department} | ID: {userData.employeeId}</p>
+                    <p className="employee-info">{userData.role} | {userData.department} | ID: {userData.employeeId}</p>
                 </div>
                 <div className="profile-summary">
-                    <UserProfile user={userData} />
+                    {/*<UserProfile user={userData} />*/}
                 </div>
             </div>
 
@@ -243,6 +213,5 @@ const DashboardHome = () => {
         </div>
     );
 };
-
 
 export default EmployeeDashboard;
