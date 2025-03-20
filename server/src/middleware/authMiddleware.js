@@ -1,21 +1,27 @@
 const jwt = require("jsonwebtoken");
 
-const authenticate = (req, res, next) => {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
+const authMiddleware = (req, res, next) => {
+    try {
+        // 🔹 1️⃣ Get token from request headers
+        const authHeader = req.headers.authorization;
+        console.log("🔹 Auth Header Received:", authHeader);
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(403).json({ message: "Forbidden" });
-        req.user = decoded;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+        const token = authHeader.split(" ")[1];
+
+        // 🔹 2️⃣ Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace with your actual secret
+
+        // 🔹 3️⃣ Attach user info to the request
+        req.user = decoded; // { id: 'USER_ID', role: 'employee' }
+
+        // 🔹 4️⃣ Pass control to the next middleware/controller
         next();
-    });
-};
-
-const authorize = (roles) => (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-        return res.status(403).json({ message: "Access Denied" });
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
-    next();
 };
 
-module.exports = { authenticate, authorize };
+module.exports = authMiddleware;

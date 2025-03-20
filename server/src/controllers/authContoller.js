@@ -115,10 +115,6 @@ const loginUser = async (req, res) => {
     // Compare password with the hashed password in DB
     const isMatch = await bcrypt.compare(trimmedPassword, user.password);
 
-    console.log("Entered password:", trimmedPassword);
-    console.log("Stored hashed password:", user.password);
-    console.log("Password match result:", isMatch);
-
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid user ID or password" });
     }
@@ -127,7 +123,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "8h" }
     );
 
     // Set cookie with token

@@ -1,35 +1,59 @@
 const mongoose = require('mongoose');
 
-const leaveRequestSchema = new mongoose.Schema({
-    employee: {
+const LeaveRequestSchema = new mongoose.Schema({
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-    },
-    leaveType: {
-        type: String,
-        enum: ['vacation', 'sick', 'personal', 'unpaid'],
-        required: true,
+        required: true
     },
     startDate: {
         type: Date,
-        required: true,
+        required: true
     },
     endDate: {
         type: Date,
-        required: true,
+        required: true
+    },
+    leaveType: {
+        type: String,
+        enum: ['annual', 'sick', 'personal', 'maternity', 'paternity'],
+        required: true
     },
     reason: {
         type: String,
+        required: true
+    },
+    attachment: {
+        type: String, // File path or URL
+        default: null
+    },
+    contactInfo: {
+        type: String,
+        default: ''
+    },
+    halfDay: {
+        type: Boolean,
+        default: false
+    },
+    halfDayOption: {
+        type: String,
+        enum: ['first', 'second'],
+        default: 'first'
     },
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],
-        default: 'pending',
+        default: 'pending'
     },
-    adminResponse: {
-        type: String,
+    approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     },
+    approvedOn: {
+        type: Date,
+        default: null
+    }
 }, { timestamps: true });
 
-module.exports = mongoose.model('LeaveRequest', leaveRequestSchema);
+module.exports = mongoose.model('LeaveRequest', LeaveRequestSchema);

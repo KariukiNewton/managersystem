@@ -14,10 +14,13 @@ const Sidebar = ({ isOpen, toggleSidebar, navItems }) => {
     // Ensure user has a profile picture
     useEffect(() => {
         if (user && !user.profilePic) {
-            setUser((prevUser) => ({
-                ...prevUser,
-                profilePic: generateAvatar(prevUser.name)
-            }));
+            setUser((prevUser) => {
+                if (!prevUser) return null; // Ensure prevUser is not null
+                return {
+                    ...prevUser,
+                    profilePic: generateAvatar(prevUser?.name || "User")
+                };
+            });
         }
     }, [user, setUser]);
 
