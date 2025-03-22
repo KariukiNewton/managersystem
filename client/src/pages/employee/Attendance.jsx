@@ -105,8 +105,11 @@ const AttendancePage = () => {
                 );
             }
 
-            fetchAttendanceData();
-            fetchWeeklySummary();
+            setTimeout(() => {
+                fetchAttendanceData();
+                fetchWeeklySummary();
+            }, 500);
+
         } catch (error) {
             console.error('Error checking out:', error);
         }

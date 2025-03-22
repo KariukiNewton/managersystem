@@ -33,15 +33,19 @@ const Login = () => {
             switch (response.data.user.role) {
                 case "admin":
                     navigate("/admin/dashboard");
+                    window.location.reload();
                     break;
                 case "finance":
                     navigate("/finance/dashboard");
+                    window.location.reload();
                     break;
                 case "employee":
                     navigate("/employee/dashboard");
+                    window.location.reload();
                     break;
                 default:
                     navigate("/login");
+                    window.location.reload();
             }
         } catch (error) {
             setError(error.response?.data?.message || "Login failed");

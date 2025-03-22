@@ -36,6 +36,7 @@ const Header = ({ userRole, isSidebarOpen, toggleSidebar }) => {
     const handleLogout = () => {
         console.log("Logging out...");
         setUser(null);
+        axios.defaults.headers.common["Authorization"] = "";
         localStorage.removeItem("user");
         navigate("/login");
     };

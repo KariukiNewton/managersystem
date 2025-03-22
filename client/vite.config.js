@@ -11,6 +11,7 @@ export default defineConfig({
       '/departments': 'http://localhost:5000',
       "/payroll": "http://localhost:5000",
       "/attendance": "http://localhost:5000",
+      "/leave": "http://localhost:5000",
     },
   },
 })

@@ -90,11 +90,18 @@ const DashboardHome = () => {
         day: 'numeric'
     });
 
+    const getGreetingMessage = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good Morning";
+        if (hour < 17) return "Good Afternoon";
+        return "Good Evening";
+    };
+
     return (
         <div className="employee-dashboard">
             <div className="welcome-section">
                 <div className="greeting">
-                    <h1>Welcome back, {userData.name}</h1>
+                    <h1>{getGreetingMessage()}, {userData.name}</h1>
                     <p className="date">{currentDate}</p>
                     <p className="employee-info">{userData.role} | {userData.department} | ID: {userData.employeeId}</p>
                 </div>
@@ -196,16 +203,16 @@ const DashboardHome = () => {
             <div className="quick-actions">
                 <h3>Quick Actions</h3>
                 <div className="action-buttons">
-                    <Link to="/employee/attendance" className="action-button">
+                    <Link to="/employee/dashboard/attendance" className="action-button">
                         Check In/Out
                     </Link>
-                    <Link to="/employee/leave" className="action-button">
+                    <Link to="/employee/dashboard/leave" className="action-button">
                         Request Leave
                     </Link>
-                    <Link to="/employee/finance" className="action-button">
+                    <Link to="/employee/dashboard/finance" className="action-button">
                         View Pay Slip
                     </Link>
-                    <Link to="/employee/tasks" className="action-button">
+                    <Link to="/employee/dashboard/Department-tasks" className="action-button">
                         Update Task
                     </Link>
                 </div>

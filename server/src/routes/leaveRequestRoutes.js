@@ -8,6 +8,7 @@ const {
     getUserLeaveRequests,
     updateLeaveStatus,
     deleteLeaveRequest,
+    getLeaveBalance
     //approveLeaveRequest,
     //rejectLeaveRequest
 } = require("../controllers/leaveRequestControllers.js");
@@ -15,11 +16,12 @@ const {
 // 🔹 Employee Routes
 router.post("/", verifyToken, createLeaveRequest);
 router.get("/my-leaves", verifyToken, getUserLeaveRequests);
-router.delete("/:id", verifyToken, deleteLeaveRequest);
+router.delete("/:requestId", verifyToken, deleteLeaveRequest);
+router.get('/balance', verifyToken, getLeaveBalance);
 
 // 🔹 Admin Routes
 router.get("/", verifyToken, roleMiddleware("admin"), getAllLeaveRequests);
-router.put("/:id", verifyToken, roleMiddleware("admin"), updateLeaveStatus);
+router.put("/:requestId", verifyToken, roleMiddleware("admin"), updateLeaveStatus);
 //router.put("/:id/approve", verifyToken, roleMiddleware("admin"), approveLeaveRequest);
 //router.put("/:id/reject", verifyToken, roleMiddleware("admin"), rejectLeaveRequest);
 

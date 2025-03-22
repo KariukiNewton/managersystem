@@ -72,6 +72,8 @@ const checkOut = async (req, res) => {
 
         attendance.checkout = currentTime;
         attendance.hoursWorked = hoursWorked;
+        attendance.weekStart = weekStart;
+
         await attendance.save();
 
         res.status(200).json({ message: 'Checked out successfully', attendance });
@@ -98,9 +100,13 @@ const getAttendanceHistory = async (req, res) => {
 const getWeeklySummary = async (req, res) => {
     try {
         const userId = req.user.id;
-        const weekStart = moment().startOf('isoWeek').format('YYYY-MM-DD');
+        const startOfWeek = moment().startOf('isoWeek').format('YYYY-MM-DD');
+        const endOfWeek = moment().endOf('isoWeek').format('YYYY-MM-DD');
 
-        const weekRecords = await Attendance.find({ user: userId, weekStart });
+        const weekRecords = await Attendance.find({
+            user: userId,
+            date: { $gte: startOfWeek, $lte: endOfWeek }
+        });
         let totalMinutes = 0, lateCount = 0, absenceCount = 0;
         const STANDARD_WEEK_HOURS = 40 * 60; // 40 hours in minutes
 

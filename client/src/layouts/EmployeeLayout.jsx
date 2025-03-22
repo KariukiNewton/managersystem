@@ -29,9 +29,9 @@ const EmployeeLayout = () => {
     }, [user, setUser]);
 
     useEffect(() => {
-        console.log("User in EmployeeLayout:", user); // Debugging
-        const token = localStorage.getItem("token");
-        console.log("User in EmployeeLayout User Token:", token);
+        //console.log("User in EmployeeLayout:", user); // Debugging
+        //const token = localStorage.getItem("token");
+        //console.log("User in EmployeeLayout User Token:", token);
         if (user === undefined) return; // Avoid unnecessary redirects
         if (!user) {
             navigate("/login", { replace: true });

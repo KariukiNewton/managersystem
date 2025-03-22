@@ -11,16 +11,17 @@
         margin-bottom: 2rem;
 
         h3 {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: var(--text-color);
             margin-top: 0;
             margin-bottom: 1.5rem;
+            font-weight: 600;
         }
     }
 
     .balance-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 1.5rem;
 
         .balance-card {
@@ -28,95 +29,63 @@
             border-radius: 0.5rem;
             padding: 1.5rem;
             background-color: var(--card-bg);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+
+            // Subtle colored left edge
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 6px;
+                background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+                border-top-left-radius: 0.5rem;
+                border-bottom-left-radius: 0.5rem;
+            }
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 12px var(--box-shadow);
+            }
 
             .leave-type {
-                font-weight: 600;
-                font-size: 1.1rem;
+                font-weight: 700;
+                font-size: 1.2rem;
                 margin-bottom: 1rem;
-                color: var(--text-color);
+                color: var(--primary-color);
             }
 
             .balance-details {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
-
-                .balance-item {
-                    text-align: center;
-
-                    .value {
-                        display: block;
-                        font-size: 1.5rem;
-                        font-weight: 700;
-                        color: var(--text-color);
-                        margin-bottom: 0.25rem;
-                    }
-
-                    .label {
-                        font-size: 0.85rem;
-                        color: var(--secondary-color);
-                    }
-
-                    &.available {
-                        .value {
-                            color: #34a853;
-                        }
-                    }
-                }
-            }
-
-            &:nth-child(1) {
-                border-top: 4px solid var(--primary-color);
-            }
-
-            &:nth-child(2) {
-                border-top: 4px solid #ea4335;
-            }
-
-            &:nth-child(3) {
-                border-top: 4px solid #fbbc05;
-            }
-
-            &:nth-child(4) {
-                border-top: 4px solid #34a853;
-            }
-
-            &:nth-child(5) {
-                border-top: 4px solid #673ab7;
+                font-size: 1rem;
+                color: var(--text-color);
             }
         }
     }
 
-    .leave-form {
-        .form-row {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-
-            @media (max-width: 768px) {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-
-        .form-group {
-            flex: 1;
+    .leave-request-form-section {
+        form {
+            display: grid;
+            gap: 1rem;
 
             label {
-                display: block;
-                margin-bottom: 0.5rem;
-                font-size: 0.9rem;
+                font-weight: 600;
                 color: var(--text-color);
+                font-size: 1rem;
             }
 
-            input[type="text"],
-            input[type="date"],
+            input,
             select,
             textarea {
                 width: 100%;
                 padding: 0.75rem;
                 border: 1px solid var(--border-color);
-                border-radius: 0.25rem;
+                border-radius: 0.3rem;
                 font-size: 1rem;
                 background-color: var(--card-bg);
                 color: var(--text-color);
@@ -130,62 +99,23 @@
 
             textarea {
                 resize: vertical;
+                min-height: 100px;
             }
-
-            .file-input {
-                padding: 0.5rem 0;
-            }
-
-            small {
-                display: block;
-                margin-top: 0.5rem;
-                font-size: 0.8rem;
-                color: var(--secondary-color);
-            }
-
-            .duration-display {
-                padding: 0.75rem;
-                background-color: var(--bg-color);
-                border: 1px solid var(--border-color);
-                border-radius: 0.25rem;
-                font-size: 1rem;
-                color: var(--text-color);
-                font-weight: 600;
-            }
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
 
             button {
-                padding: 0.75rem 2rem;
-                border-radius: 0.25rem;
+                padding: 0.75rem;
+                border-radius: 0.3rem;
                 font-size: 1rem;
                 cursor: pointer;
                 border: none;
-                font-weight: 500;
+                font-weight: 600;
                 transition: all 0.2s ease;
-            }
-
-            .submit-btn {
                 background-color: var(--primary-color);
                 color: white;
 
                 &:hover {
                     background-color: var(--primary-color);
-                    filter: brightness(90%); // Darken
-                }
-            }
-
-            .cancel-btn {
-                background-color: var(--bg-color);
-                border: 1px solid var(--border-color);
-                color: var(--text-color);
-
-                &:hover {
-                    background-color: var(--border-color);
+                    filter: brightness(90%);
                 }
             }
         }
@@ -222,13 +152,29 @@
             text-transform: capitalize;
         }
 
+        // Status badges with distinct colors
         .status-badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
+            padding: 0.3rem 0.8rem;
             border-radius: 1rem;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
             text-transform: capitalize;
+
+            &.approved {
+                background-color: rgba(46, 204, 113, 0.15);
+                color: #27ae60;
+            }
+
+            &.pending {
+                background-color: rgba(241, 196, 15, 0.15);
+                color: #f1c40f;
+            }
+
+            &.rejected {
+                background-color: rgba(231, 76, 60, 0.15);
+                color: #e74c3c;
+            }
         }
     }
 }

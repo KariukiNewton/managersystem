@@ -1,7 +1,8 @@
-// _empAttendance.scss
-
 .attendance-page {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 
     .time-tracking-panel {
         display: flex;
@@ -10,15 +11,15 @@
         background-color: var(--card-bg);
         border-radius: 0.5rem;
         padding: 2rem;
-        margin-bottom: 2rem;
         box-shadow: 0 2px 10px var(--box-shadow);
 
         .current-time-display {
+            text-align: left;
+
             .time {
                 font-size: 2.5rem;
                 font-weight: 700;
                 color: var(--text-color);
-                margin-bottom: 0.5rem;
             }
 
             .date {
@@ -28,16 +29,17 @@
         }
 
         .attendance-actions {
+            display: flex;
+            gap: 1rem;
 
-            .checkin-btn,
-            .checkout-btn {
+            button {
                 padding: 0.75rem 2rem;
                 font-size: 1rem;
-                border-radius: 0.25rem;
+                border-radius: 0.5rem;
                 border: none;
                 cursor: pointer;
                 font-weight: 500;
-                transition: all 0.2s ease;
+                transition: all 0.2s ease-in-out;
             }
 
             .checkin-btn {
@@ -45,8 +47,7 @@
                 color: white;
 
                 &:hover {
-                    background-color: var(--primary-color);
-                    filter: brightness(90%); // Darken
+                    filter: brightness(90%);
                 }
             }
 
@@ -55,69 +56,9 @@
                 color: white;
 
                 &:hover {
-                    background-color: var(--primary-color);
-                    filter: brightness(90%); // Darken
+                    filter: brightness(90%);
                 }
             }
-
-            .status-container {
-                display: flex;
-                gap: 2rem;
-                align-items: center;
-
-                &.complete {
-                    .status:first-child {
-                        &::after {
-                            content: "→";
-                            position: absolute;
-                            right: -1.5rem;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            font-size: 1.5rem;
-                            color: var(--secondary-color);
-                        }
-                    }
-                }
-            }
-
-            .status {
-                position: relative;
-
-                .status-label {
-                    font-size: 0.9rem;
-                    color: var(--secondary-color);
-                    margin-bottom: 0.25rem;
-                }
-
-                .status-time {
-                    font-size: 1.2rem;
-                    font-weight: 600;
-                    color: var(--text-color);
-                }
-            }
-        }
-    }
-
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-
-        h3 {
-            font-size: 1.2rem;
-            color: var(--text-color);
-            margin: 0;
-        }
-
-        .period-selector,
-        .month-picker {
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            background-color: var(--card-bg);
-            cursor: pointer;
         }
     }
 
@@ -125,8 +66,13 @@
         background-color: var(--card-bg);
         border-radius: 0.5rem;
         padding: 1.5rem;
-        margin-bottom: 2rem;
         box-shadow: 0 2px 10px var(--box-shadow);
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
 
         .summary-cards {
             display: grid;
@@ -135,21 +81,22 @@
 
             .summary-card {
                 text-align: center;
-                padding: 1.5rem 1rem;
+                padding: 1.5rem;
                 background-color: var(--bg-color);
                 border-radius: 0.5rem;
                 border: 1px solid var(--border-color);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s ease-in-out;
 
-                .summary-value {
-                    font-size: 1.8rem;
-                    font-weight: 700;
-                    color: var(--text-color);
-                    margin-bottom: 0.5rem;
+                &:hover {
+                    transform: scale(1.05);
                 }
 
-                .summary-label {
-                    font-size: 0.9rem;
-                    color: var(--secondary-color);
+                span {
+                    font-weight: 600;
+                    display: block;
+                    margin-bottom: 0.5rem;
+                    color: var(--text-color);
                 }
             }
         }
@@ -161,12 +108,13 @@
         padding: 1.5rem;
         box-shadow: 0 2px 10px var(--box-shadow);
 
-        .history-table-container {
-            overflow-x: auto;
-            margin-bottom: 1.5rem;
+        h3 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
         }
 
-        .history-table {
+        table {
             width: 100%;
             border-collapse: collapse;
 
@@ -179,13 +127,15 @@
 
             th {
                 font-weight: 600;
-                color: var(--text-color);
                 background-color: var(--bg-color);
+                color: var(--text-color);
             }
 
             tr {
+                transition: background-color 0.2s ease-in-out;
+
                 &:hover {
-                    background-color: var(--bg-color);
+                    background-color: rgba(0, 0, 0, 0.05);
                 }
 
                 &.absent {
@@ -196,14 +146,64 @@
                     background-color: rgba(251, 188, 5, 0.1);
                 }
             }
+        }
 
-            .status-badge {
-                display: inline-block;
-                padding: 0.25rem 0.75rem;
-                border-radius: 1rem;
-                font-size: 0.8rem;
-                font-weight: 500;
-                text-transform: capitalize;
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+            gap: 1rem;
+
+            button {
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 0.5rem 1.5rem;
+                font-size: 0.9rem;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+
+                &:disabled {
+                    background-color: var(--border-color);
+                    cursor: not-allowed;
+                }
+
+                &:hover:not(:disabled) {
+                    filter: brightness(90%);
+                }
+            }
+        }
+    }
+
+    // Responsive Design
+    @media (max-width: 768px) {
+        .time-tracking-panel {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .attendance-actions {
+            flex-direction: column;
+            width: 100%;
+
+            button {
+                width: 100%;
+            }
+        }
+
+        .summary-cards {
+            grid-template-columns: 1fr;
+        }
+
+        table {
+            font-size: 0.9rem;
+
+            th,
+            td {
+                padding: 0.5rem;
             }
         }
     }
