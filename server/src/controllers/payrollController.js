@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/Users.js");
 const Payroll = require("../models/payrollModel.js");
 
@@ -98,6 +99,7 @@ const getPayroll = async (req, res) => {
     }
 };
 
+
 // Get Payroll By Name
 const getPayrollByName = async (req, res) => {
     try {
@@ -178,65 +180,86 @@ const deletePayroll = async (req, res) => {
 const processPayroll = async (req, res) => {
     try {
         const { payPeriod, payDate } = req.body;
-
         if (!payPeriod || !payDate) {
             return res.status(400).json({ message: "Pay period and pay date are required" });
         }
 
-        // Get all users
-        const users = await User.find();
+        const users = await User.find().populate("department");
+        if (!users.length) {
+            return res.status(400).json({ message: "No employees found for payroll processing" });
+        }
 
-        // Process payroll for each user
-        const processedRecords = [];
         for (const user of users) {
-            // Find or create payroll record
-            let payroll = await Payroll.findOne({ name: user._id });
+            if (!user.department || !departmentPayrollConfig[user.department.name]) {
+                console.warn(`No payroll configuration found for department: ${user.department?.name}`);
+                continue;
+            }
 
+            const payrollConfig = departmentPayrollConfig[user.department.name];
+
+            let payroll = await Payroll.findOne({ name: user._id });
             if (!payroll) {
                 payroll = new Payroll({
                     name: user._id,
-                    department: user.department,
+                    department: user.department.name,
                     joinDate: user.joinDate,
-                    basicSalary: user.salary || 0,
-                    allowances: user.allowances || { housing: 0, transport: 0, medical: 0 },
-                    deductions: user.deductions || { tax: 0, insurance: 0, pension: 0 },
-                    grossPay: 0,
-                    netPay: 0
+                    payDate: new Date(payDate),
+                    payPeriod,
+                    basicSalary: payrollConfig.basicSalary,
+                    allowances: payrollConfig.allowances,
+                    deductions: payrollConfig.deductions
                 });
+            } else {
+                payroll.basicSalary = payrollConfig.basicSalary;
+                payroll.allowances = payrollConfig.allowances;
+                payroll.deductions = payrollConfig.deductions;
+                payroll.payDate = new Date(payDate);
+                payroll.payPeriod = payPeriod;
             }
 
-            // Update payroll with latest user data
-            payroll.basicSalary = user.salary || payroll.basicSalary;
-            payroll.allowances = user.allowances || payroll.allowances;
-            payroll.deductions = user.deductions || payroll.deductions;
-
-            // Calculate totals
-            const totalAllowances = Object.values(payroll.allowances).reduce((a, b) => a + b, 0);
-            const totalDeductions = Object.values(payroll.deductions).reduce((a, b) => a + b, 0);
-
-            payroll.grossPay = payroll.basicSalary + totalAllowances;
-            payroll.netPay = payroll.grossPay - totalDeductions;
-
-            // Update pay date and period
-            payroll.payDate = new Date(payDate);
-            payroll.payPeriod = payPeriod;
+            payroll.grossPay = payroll.basicSalary + Object.values(payroll.allowances).reduce((a, b) => a + b, 0);
+            payroll.netPay = payroll.grossPay - Object.values(payroll.deductions).reduce((a, b) => a + b, 0);
 
             await payroll.save();
-            processedRecords.push(payroll);
         }
 
-        res.status(200).json({
-            message: `Processed payroll for ${processedRecords.length} employees`,
-            payPeriod,
-            payDate,
-            processedCount: processedRecords.length
-        });
+        res.status(200).json({ message: "Payroll processed successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error processing payroll", error: error.message });
     }
 };
 
 // Process Payroll for a specific employee
+
+const departmentPayrollConfig = {
+    "Production and Processing": {
+        basicSalary: 40000,
+        allowances: { housing: 8000, transport: 5000, medical: 3000 },
+        deductions: { tax: 4000, insurance: 2000, pension: 3000 }
+    },
+    "Management": {
+        basicSalary: 120000,
+        allowances: { housing: 25000, transport: 10000, medical: 5000 },
+        deductions: { tax: 12000, insurance: 5000, pension: 8000 }
+    },
+    "Quality Assuarance": {
+        basicSalary: 60000,
+        allowances: { housing: 12000, transport: 6000, medical: 4000 },
+        deductions: { tax: 6000, insurance: 3000, pension: 4500 }
+    },
+    "Sales and Marketing": {
+        basicSalary: 50000,
+        allowances: { housing: 10000, transport: 7000, medical: 3500 },
+        deductions: { tax: 5000, insurance: 2500, pension: 4000 }
+    },
+    "Maintenance and Engineering": {
+        basicSalary: 70000,
+        allowances: { housing: 15000, transport: 8000, medical: 5000 },
+        deductions: { tax: 7000, insurance: 3500, pension: 5000 }
+    }
+};
+
+
 const processEmployeePayroll = async (req, res) => {
     try {
         const { id } = req.params;

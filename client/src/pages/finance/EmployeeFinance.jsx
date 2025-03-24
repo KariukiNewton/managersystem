@@ -1,62 +1,72 @@
-// EmployeeFinance.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 import './_financeEmpFinancials.scss';
 
-// Mock data - replace with actual API calls to your MongoDB
-const mockEmployees = [
-    {
-        id: '1',
-        name: 'John Doe',
-        position: 'Software Engineer',
-        department: 'Engineering',
-        joinDate: '2023-01-15',
-        basicSalary: 5000,
-        allowances: { housing: 500, transport: 300, medical: 200 },
-        deductions: { tax: 750, insurance: 250, pension: 300 }
-    },
-    {
-        id: '2',
-        name: 'Jane Smith',
-        position: 'HR Manager',
-        department: 'Human Resources',
-        joinDate: '2022-05-20',
-        basicSalary: 6000,
-        allowances: { housing: 600, transport: 350, medical: 250 },
-        deductions: { tax: 900, insurance: 300, pension: 350 }
-    }
-];
-
 const EmployeeFinance = () => {
     const { id } = useParams();
-    const [employees, setEmployees] = useState(mockEmployees);
+    const [employees, setEmployees] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [filterTerm, setFilterTerm] = useState('');
 
-    // Fetch employees and set selected employee if ID is provided
+    // Fetch employees from API
     useEffect(() => {
-        // In a real app, this would be fetched from the API
-        // Example: fetchEmployees().then(data => setEmployees(data));
+        const fetchEmployees = async () => {
+            try {
+                const response = await axios.get("/payroll");
+                console.log("Fetched Payroll Data:", response.data);
 
-        if (id) {
-            const employee = employees.find(emp => emp.id === id);
+                if (Array.isArray(response.data)) {
+                    setEmployees(response.data);
+                } else {
+                    console.error("Expected an array, but got:", typeof response.data, response.data);
+                    setEmployees([]);
+                }
+            } catch (error) {
+                console.error("Error fetching payroll data:", error);
+                toast.error("Failed to fetch payroll data");
+            }
+        };
+
+        fetchEmployees();
+    }, []);
+
+    // Set selected employee when ID is provided
+    useEffect(() => {
+        if (id && employees.length) {
+            const employee = employees.find(emp => emp._id === id);
             if (employee) {
                 setSelectedEmployee(employee);
             }
         }
     }, [id, employees]);
 
-    const filteredEmployees = employees.filter(employee =>
-        employee.name.toLowerCase().includes(filterTerm.toLowerCase())
-    );
+    const filteredEmployees = employees?.filter(employee =>
+        employee.name?.username?.toLowerCase().includes(filterTerm.toLowerCase())
+
+    ) || [];
+
 
     const handleSelectEmployee = (emp) => {
         setSelectedEmployee(emp);
     };
 
-    const handleUpdateSalary = () => {
-        toast.success(`Salary updated successfully for ${selectedEmployee.name}`);
+    const handleUpdateSalary = async () => {
+        if (!selectedEmployee) return;
+
+        try {
+            await axios.put(`/payroll/${selectedEmployee._id}`, {
+                basicSalary: selectedEmployee.basicSalary,
+                allowances: selectedEmployee.allowances,
+                deductions: selectedEmployee.deductions
+            });
+
+            toast.success(`Salary updated successfully for ${selectedEmployee.name}`);
+        } catch (error) {
+            toast.error('Failed to update salary');
+            console.error('Error updating salary:', error);
+        }
     };
 
     return (
@@ -77,11 +87,11 @@ const EmployeeFinance = () => {
                     <ul className="employees">
                         {filteredEmployees.map(emp => (
                             <li
-                                key={emp.id}
-                                className={selectedEmployee && selectedEmployee.id === emp.id ? 'selected' : ''}
+                                key={emp._id}
+                                className={selectedEmployee && selectedEmployee._id === emp._id ? 'selected' : ''}
                                 onClick={() => handleSelectEmployee(emp)}
                             >
-                                <span>{emp.name}</span>
+                                <span>{emp.name.username}</span>
                                 <span>{emp.position}</span>
                             </li>
                         ))}
@@ -90,21 +100,32 @@ const EmployeeFinance = () => {
 
                 {selectedEmployee ? (
                     <div className="employee-details">
-                        <h2>{selectedEmployee.name}</h2>
+                        <h2>{selectedEmployee.name.username}</h2>
                         <p className="position">{selectedEmployee.position} - {selectedEmployee.department}</p>
 
                         <div className="detail-section">
                             <h3>Salary Information</h3>
                             <div className="form-group">
                                 <label>Basic Salary:</label>
-                                <input type="number" defaultValue={selectedEmployee.basicSalary} />
+                                <input
+                                    type="number"
+                                    value={selectedEmployee.basicSalary}
+                                    onChange={(e) => setSelectedEmployee({ ...selectedEmployee, basicSalary: Number(e.target.value) })}
+                                />
                             </div>
 
                             <h4>Allowances</h4>
                             {Object.entries(selectedEmployee.allowances).map(([key, value]) => (
                                 <div className="form-group" key={key}>
                                     <label>{key.charAt(0).toUpperCase() + key.slice(1)}:</label>
-                                    <input type="number" defaultValue={value} />
+                                    <input
+                                        type="number"
+                                        value={value}
+                                        onChange={(e) => setSelectedEmployee({
+                                            ...selectedEmployee,
+                                            allowances: { ...selectedEmployee.allowances, [key]: Number(e.target.value) }
+                                        })}
+                                    />
                                 </div>
                             ))}
 
@@ -112,7 +133,14 @@ const EmployeeFinance = () => {
                             {Object.entries(selectedEmployee.deductions).map(([key, value]) => (
                                 <div className="form-group" key={key}>
                                     <label>{key.charAt(0).toUpperCase() + key.slice(1)}:</label>
-                                    <input type="number" defaultValue={value} />
+                                    <input
+                                        type="number"
+                                        value={value}
+                                        onChange={(e) => setSelectedEmployee({
+                                            ...selectedEmployee,
+                                            deductions: { ...selectedEmployee.deductions, [key]: Number(e.target.value) }
+                                        })}
+                                    />
                                 </div>
                             ))}
 
@@ -135,16 +163,16 @@ const EmployeeFinance = () => {
                                     <tr>
                                         <td>February 2025</td>
                                         <td>2025-02-28</td>
-                                        <td>${(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
-                                        <td>${(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0) - Object.values(selectedEmployee.deductions).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
-                                        <td><Link to={`/finance/invoice/${selectedEmployee.id}`} className="btn-view">View</Link></td>
+                                        <td>Ksh.{(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
+                                        <td>Ksh.{(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0) - Object.values(selectedEmployee.deductions).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
+                                        <td><Link to={`/finance/invoice/${selectedEmployee._id}`} className="btn-view">View</Link></td>
                                     </tr>
                                     <tr>
                                         <td>January 2025</td>
                                         <td>2025-01-31</td>
-                                        <td>${(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
-                                        <td>${(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0) - Object.values(selectedEmployee.deductions).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
-                                        <td><Link to={`/finance/invoice/${selectedEmployee.id}`} className="btn-view">View</Link></td>
+                                        <td>Ksh.{(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
+                                        <td>Ksh.{(selectedEmployee.basicSalary + Object.values(selectedEmployee.allowances).reduce((sum, val) => sum + val, 0) - Object.values(selectedEmployee.deductions).reduce((sum, val) => sum + val, 0)).toLocaleString()}</td>
+                                        <td><Link to={`/finance/invoice/${selectedEmployee._id}`} className="btn-view">View</Link></td>
                                     </tr>
                                 </tbody>
                             </table>

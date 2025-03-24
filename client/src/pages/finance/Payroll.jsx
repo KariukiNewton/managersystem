@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import "./_financePayroll.scss";
 
-// Utility functions moved outside component for better organization
+// Utility functions
 const generatePayPeriods = () => {
     const today = new Date();
     return Array.from({ length: 6 }, (_, i) => {
@@ -24,18 +24,12 @@ const getCurrentPayPeriod = () => {
 const getDefaultPayDate = (payPeriod) => {
     const [monthName, year] = payPeriod.split(" ");
     const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
-    const payYear = parseInt(year);
-    return `${payYear}-${String(monthIndex + 1).padStart(2, "0")}-28`;
+    return `${year}-${String(monthIndex + 1).padStart(2, "0")}-28`;
 };
 
-const PayrollTable = ({ data, loading }) => {
-    if (loading) {
-        return <p>Loading payroll data...</p>;
-    }
-
-    if (data.length === 0) {
-        return <p>No payroll data found</p>;
-    }
+const PayrollTable = ({ data, departmentMap, loading }) => {
+    if (loading) return <p>Loading payroll data...</p>;
+    if (data.length === 0) return <p>No payroll data found</p>;
 
     return (
         <table className="data-table payroll-table">
@@ -55,19 +49,15 @@ const PayrollTable = ({ data, loading }) => {
                 {data.map((employee) => (
                     <tr key={employee._id}>
                         <td>{employee.name.username}</td>
-                        <td>{employee.department}</td>
-                        <td>${employee.basicSalary.toLocaleString()}</td>
-                        <td>${Object.values(employee.allowances).reduce((a, b) => a + b, 0).toLocaleString()}</td>
-                        <td>${employee.grossPay.toLocaleString()}</td>
-                        <td>${Object.values(employee.deductions).reduce((a, b) => a + b, 0).toLocaleString()}</td>
-                        <td>${employee.netPay.toLocaleString()}</td>
+                        <td>{departmentMap[employee.department] || "Unknown"}</td>
+                        <td>Ksh {employee.basicSalary.toLocaleString()}</td>
+                        <td>Ksh {Object.values(employee.allowances).reduce((a, b) => a + b, 0).toLocaleString()}</td>
+                        <td>Ksh {employee.grossPay.toLocaleString()}</td>
+                        <td>Ksh {Object.values(employee.deductions).reduce((a, b) => a + b, 0).toLocaleString()}</td>
+                        <td>Ksh {employee.netPay.toLocaleString()}</td>
                         <td>
-                            <Link to={`/finance/employee-finances/${employee.name._id}`} className="btn-view">
-                                Details
-                            </Link>
-                            <Link to={`/finance/invoice/${employee.name._id}`} className="btn-invoice">
-                                Invoice
-                            </Link>
+                            <Link to={`/finance/employee-finances/${employee.name._id}`} className="btn-view">Details</Link>
+                            <Link to={`/finance/invoice/${employee.name._id}`} className="btn-invoice">Invoice</Link>
                         </td>
                     </tr>
                 ))}
@@ -80,28 +70,27 @@ const Payroll = () => {
     const [payPeriod, setPayPeriod] = useState(getCurrentPayPeriod());
     const [payDate, setPayDate] = useState(getDefaultPayDate(payPeriod));
     const [payrollData, setPayrollData] = useState([]);
+    const [departments, setDepartments] = useState({});
     const [filterTerm, setFilterTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Available pay periods
     const payPeriods = useMemo(() => generatePayPeriods(), []);
 
-    // Fetch payroll data from backend
+    // Fetch Payroll Data
     useEffect(() => {
         const fetchPayrollData = async () => {
             try {
                 setLoading(true);
                 const response = await axios.get("/payroll");
+                console.log("Fetched Payroll Data:", response.data);
 
-                // Ensure response.data is an array before setting it
                 if (Array.isArray(response.data)) {
                     setPayrollData(response.data);
                 } else {
                     console.error("Expected an array, but got:", typeof response.data, response.data);
-                    setPayrollData([]); // Default to an empty array to prevent errors
+                    setPayrollData([]);
                 }
-
             } catch (error) {
                 console.error("Error fetching payroll data:", error);
                 toast.error("Failed to fetch payroll data");
@@ -113,16 +102,44 @@ const Payroll = () => {
         fetchPayrollData();
     }, []);
 
-    // Handle payroll processing request
+    // Fetch Department Names
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            try {
+                const response = await axios.get("/departments"); // Assuming this API returns department names
+                const departmentMap = response.data.reduce((acc, dept) => {
+                    acc[dept._id] = dept.name; // Store department ID -> Name mapping
+                    return acc;
+                }, {});
+                setDepartments(departmentMap);
+            } catch (error) {
+                console.error("Error fetching departments:", error);
+                toast.error("Failed to fetch department data");
+            }
+        };
+
+        fetchDepartments();
+    }, []);
+
+    // Handle payroll processing
     const handleRunPayroll = async () => {
         try {
             setIsProcessing(true);
+            setPayrollData([]); // Clears old data to prevent stale UI
+
             await axios.post("/payroll/process", { payPeriod, payDate });
             toast.success(`Payroll processed successfully for ${payPeriod}`);
 
-            // Refresh payroll data after processing
+            // Fetch updated payroll data
             const response = await axios.get("/payroll");
-            setPayrollData(response.data);
+            console.log("Updated Payroll Data:", response.data); // Check in console
+
+            if (Array.isArray(response.data)) {
+                setPayrollData(response.data);
+            } else {
+                console.error("Unexpected payroll data format:", response.data);
+                setPayrollData([]); // Reset state if unexpected data is received
+            }
         } catch (error) {
             console.error("Error processing payroll:", error);
             toast.error("Failed to process payroll: " + (error.response?.data?.message || error.message));
@@ -131,13 +148,14 @@ const Payroll = () => {
         }
     };
 
-    // Filter payroll data based on search input
+
+    // Filter payroll data
     const filteredPayroll = useMemo(() => {
         return payrollData.filter((employee) =>
             (employee.name?.username || "").toLowerCase().includes(filterTerm.toLowerCase()) ||
-            (employee.department || "").toLowerCase().includes(filterTerm.toLowerCase())
+            (departments[employee.department] || "").toLowerCase().includes(filterTerm.toLowerCase()) // Filter by department name
         );
-    }, [payrollData, filterTerm]);
+    }, [payrollData, filterTerm, departments]);
 
     return (
         <div className="payroll">
@@ -154,26 +172,24 @@ const Payroll = () => {
                         }}
                     >
                         {payPeriods.map((period) => (
-                            <option key={period} value={period}>{period}</option>
+                            <option key={period} value={period}>
+                                {period}
+                            </option>
                         ))}
                     </select>
                 </div>
 
                 <div className="control-group">
                     <label>Pay Date:</label>
-                    <input
-                        type="date"
-                        value={payDate}
-                        onChange={(e) => setPayDate(e.target.value)}
-                    />
+                    <input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} />
                 </div>
 
                 <button
-                    className={`btn-primary ${isProcessing ? 'btn-processing' : ''}`}
+                    className={`btn-primary ${isProcessing ? "btn-processing" : ""}`}
                     onClick={handleRunPayroll}
                     disabled={isProcessing}
                 >
-                    {isProcessing ? 'Processing...' : 'Run Payroll'}
+                    {isProcessing ? "Processing..." : "Run Payroll"}
                 </button>
             </div>
 
@@ -186,9 +202,11 @@ const Payroll = () => {
                 />
             </div>
 
-            <PayrollTable data={filteredPayroll} loading={loading} />
+            <PayrollTable data={filteredPayroll} departmentMap={departments} loading={loading} />
         </div>
     );
 };
 
 export default Payroll;
+
+

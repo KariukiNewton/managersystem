@@ -130,4 +130,16 @@ userSchema.post("save", async function (doc, next) {
     }
 });
 
+const Payroll = require("./payrollModel.js");
+userSchema.post("findOneAndDelete", async function (doc) {
+    if (doc) {
+        try {
+            await Payroll.deleteOne({ name: doc._id }); // Delete payroll record linked to this user
+            console.log(`Payroll record for User ${doc._id} deleted.`);
+        } catch (error) {
+            console.error("Error deleting associated payroll record:", error);
+        }
+    }
+});
+
 module.exports = mongoose.model('User', userSchema);

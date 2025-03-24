@@ -53,5 +53,27 @@ DepartmentSchema.pre("save", async function (next) {
     next();
 });
 
+const PayrollConfig = require("./payrollConfig.js"); // Import PayrollConfig
+
+DepartmentSchema.post("save", async function (doc, next) {
+    try {
+        const existingConfig = await PayrollConfig.findOne({ department: doc._id });
+
+        if (!existingConfig) {
+            await PayrollConfig.create({
+                department: doc._id,
+                baseSalary: 45000, // Default salary (modify as needed)
+                allowances: { housing: 4000, transport: 2000, medical: 1500 },
+                deductions: { tax: 4000, insurance: 1500, pension: 2500 }
+            });
+
+            console.log(`Default PayrollConfig created for new department: ${doc.name}`);
+        }
+    } catch (error) {
+        console.error("Error creating payroll config:", error);
+    }
+    next();
+});
+
 const Department = mongoose.model("Department", DepartmentSchema);
 module.exports = Department;

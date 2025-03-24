@@ -24,7 +24,6 @@ mongoose
     .then(() => console.log('✅ MongoDB Connected Successfully'))
     .catch((error) => console.error('❌ MongoDB Connection Error:', error));
 
-
 app.get('/', (req, res) => {
     res.send('Welcome to the Employee Management API');
 });
