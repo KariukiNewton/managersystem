@@ -45,10 +45,30 @@ const getUserLeaveRequests = async (req, res) => {
 // Get all leave requests (Admin view)
 const getAllLeaveRequests = async (req, res) => {
     try {
-        const requests = await LeaveRequest.find().populate('user', 'name email').sort({ createdAt: -1 });
-        res.status(200).json(requests);
+        const { page = 1, limit = 10, search, status, startDate, endDate } = req.query;
+
+        let filter = {};
+        if (search) {
+            filter.reason = { $regex: search, $options: "i" };
+        }
+        if (status) {
+            filter.status = status;
+        }
+        if (startDate && endDate) {
+            filter.startDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
+
+        const total = await LeaveRequest.countDocuments(filter);
+        const requests = await LeaveRequest.find(filter)
+            .populate("user", "email") // Populate user email
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 });
+
+        res.json({ requests, total });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch leave requests" });
     }
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Payroll from "./Payroll";
 import EmployeeFinances from "./EmployeeFinance";
@@ -22,17 +22,55 @@ const FinanceDashboard = () => {
 
 const DashboardHome = () => {
     const [stats, setStats] = useState({
-        totalEmployees: 85,
-        totalPayroll: 425000,
-        avgSalary: 5000,
-        pendingPayments: 12
+        totalEmployees: 0,
+        totalPayroll: 0,
+        avgSalary: 0,
+        pendingPayments: 0
     });
 
-    const [recentPayments, setRecentPayments] = useState([
-        { id: "P001", employee: "John Doe", amount: 5750, date: "2025-02-20" },
-        { id: "P002", employee: "Jane Smith", amount: 6350, date: "2025-02-20" },
-        { id: "P003", employee: "Mark Johnson", amount: 4800, date: "2025-02-20" }
-    ]);
+    const [recentPayments, setRecentPayments] = useState([]);
+
+    useEffect(() => {
+        // Fetch payroll stats
+        const fetchStats = async () => {
+            try {
+                const response = await fetch("/payroll");
+                const data = await response.json();
+
+                if (response.ok) {
+                    const totalEmployees = data.length;
+                    const totalPayroll = data.reduce((sum, record) => sum + record.netPay, 0);
+                    const avgSalary = totalEmployees ? totalPayroll / totalEmployees : 0;
+                    const pendingPayments = data.filter(record => record.netPay < record.grossPay).length;
+
+                    setStats({ totalEmployees, totalPayroll, avgSalary, pendingPayments });
+                } else {
+                    console.error("Failed to fetch payroll data:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching payroll data:", error);
+            }
+        };
+
+        // Fetch recent payments
+        const fetchRecentPayments = async () => {
+            try {
+                const response = await fetch("/api/payroll?limit=5&sort=-payDate");
+                const data = await response.json();
+
+                if (response.ok) {
+                    setRecentPayments(data);
+                } else {
+                    console.error("Failed to fetch recent payments:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching recent payments:", error);
+            }
+        };
+
+        fetchStats();
+        fetchRecentPayments();
+    }, []);
 
     return (
         <div className="dashboard">
@@ -44,14 +82,14 @@ const DashboardHome = () => {
                 </div>
                 <div className="stat-card">
                     <h3>Monthly Payroll</h3>
-                    <p className="stat-value">${stats.totalPayroll.toLocaleString()}</p>
+                    <p className="stat-value">Ksh.{stats.totalPayroll.toLocaleString()}</p>
                 </div>
                 <div className="stat-card">
                     <h3>Average Salary</h3>
-                    <p className="stat-value">${stats.avgSalary.toLocaleString()}</p>
+                    <p className="stat-value">Ksh.{stats.avgSalary.toLocaleString()}</p>
                 </div>
                 <div className="stat-card">
-                    <h3>Pending Payments</h3>
+                    <h3>Total Payments</h3>
                     <p className="stat-value">{stats.pendingPayments}</p>
                 </div>
             </div>
@@ -71,13 +109,13 @@ const DashboardHome = () => {
                         </thead>
                         <tbody>
                             {recentPayments.map((payment) => (
-                                <tr key={payment.id}>
-                                    <td>{payment.id}</td>
-                                    <td>{payment.employee}</td>
-                                    <td>${payment.amount.toLocaleString()}</td>
-                                    <td>{payment.date}</td>
+                                <tr key={payment._id}>
+                                    <td>{payment._id}</td>
+                                    <td>{payment.name.username}</td>
+                                    <td>${payment.netPay.toLocaleString()}</td>
+                                    <td>{new Date(payment.payDate).toLocaleDateString()}</td>
                                     <td>
-                                        <Link to={`/finance/dashboard/invoice/${payment.id}`} className="btn-view">
+                                        <Link to={`/finance/dashboard/invoice/${payment._id}`} className="btn-view">
                                             View
                                         </Link>
                                     </td>

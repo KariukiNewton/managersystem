@@ -64,7 +64,6 @@ const checkOut = async (req, res) => {
         const currentTime = moment().format('HH:mm:ss');
 
         let attendance = await Attendance.findOne({ user: userId, date: today });
-        console.log("🔍 Attendance Record Found:", attendance);
 
         if (!attendance || attendance.checkout) return res.status(400).json({ message: 'Not checked in or already checked out' });
 
@@ -72,8 +71,7 @@ const checkOut = async (req, res) => {
 
         attendance.checkout = currentTime;
         attendance.hoursWorked = hoursWorked;
-        attendance.weekStart = weekStart;
-
+        attendance.weekStart = attendance.weekStart || moment().startOf("isoWeek").format("YYYY-MM-DD");
         await attendance.save();
 
         res.status(200).json({ message: 'Checked out successfully', attendance });

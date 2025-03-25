@@ -8,6 +8,7 @@ const {
     processPayroll,
     processEmployeePayroll
 } = require("../controllers/payrollController.js");
+const authMiddleware = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.post("/", createPayroll);
 router.get("/", getPayroll);
 
 // Get a specific payroll record by employee name
-router.get("/employee/:name", getPayrollByName);
+router.get("/me", authMiddleware, getPayrollByName);
 
 // Update a payroll record
 router.put("/:id", updatePayroll);

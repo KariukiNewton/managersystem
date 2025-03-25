@@ -1,0 +1,50 @@
+.admin-leave-requests {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+    }
+
+    .ant-table {
+        background: #fff;
+
+        .ant-table-thead>tr>th {
+            background: #f0f2f5;
+            font-weight: 600;
+        }
+    }
+
+    .leave-details {
+        .detail-row {
+            display: flex;
+            margin-bottom: 12px;
+            line-height: 1.5;
+
+            .label {
+                font-weight: 600;
+                min-width: 180px;
+                color: #555;
+            }
+        }
+    }
+}

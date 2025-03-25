@@ -103,13 +103,12 @@ const getPayroll = async (req, res) => {
 // Get Payroll By Name
 const getPayrollByName = async (req, res) => {
     try {
-        const { name } = req.params;
-        const user = await User.findOne({ username: name });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        // 🔹 Get the authenticated user's ID from the middleware
+        const userId = req.user.id;
 
-        const payrollRecord = await Payroll.findOne({ name: user._id }).populate("name", "username department");
+        // 🔹 Find the payroll record linked to the user
+        const payrollRecord = await Payroll.findOne({ name: userId }).populate("name", "username department");
+
         if (!payrollRecord) {
             return res.status(404).json({ message: "Payroll record not found" });
         }
@@ -230,7 +229,6 @@ const processPayroll = async (req, res) => {
 };
 
 // Process Payroll for a specific employee
-
 const departmentPayrollConfig = {
     "Production and Processing": {
         basicSalary: 40000,

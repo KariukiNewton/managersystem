@@ -31,8 +31,8 @@ const LeaveRequests = () => {
     const fetchLeaveData = async () => {
         try {
             const [balanceRes, historyRes] = await Promise.all([
-                axios.get('/leave/balance', { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get('/leave/my-leaves', { headers: { Authorization: `Bearer ${token}` } })
+                axios.get('/leaves/balance', { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get('/leaves/my-leaves', { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             // Ensure all leave types exist in state

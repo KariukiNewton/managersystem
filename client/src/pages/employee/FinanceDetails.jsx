@@ -1,68 +1,119 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import "../../styles/styles.scss";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-const FinanceDetails = ({ employee: propEmployee }) => {
-    const { employeeId } = useParams();
-    const dummyEmployee = {
-        name: "John Doe",
-        position: "Software Engineer",
-        department: "IT",
-        basicSalary: 5000,
-        allowances: { housing: 1000, transport: 500 },
-        deductions: { tax: 800, insurance: 200 }
-    };
-    const [employee, setEmployee] = useState(propEmployee || dummyEmployee);
-    const [loading, setLoading] = useState(false); //!propEmployee && !employeeId
+const Invoice = () => {
+    const [employee, setEmployee] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const invoiceRef = useRef(null);
 
-    useEffect(() => {
-        if (!propEmployee && employeeId) {
-            fetch(`/api/employees/${employeeId}`)
-                .then(response => response.json())
-                .then(data => {
-                    setEmployee(data);
-                    setLoading(false);
-                })
-                .catch(error => console.error("Error fetching employee data:", error));
+    const generatePDF = async () => {
+        if (!invoiceRef.current) {
+            console.error("Invoice content is not available for PDF generation.");
+            return;
         }
-    }, [employeeId, propEmployee]);
+
+        try {
+            // Use html2canvas to convert the invoice div to a canvas
+            const canvas = await html2canvas(invoiceRef.current, {
+                scale: 2, // Increases resolution
+                useCORS: true, // Helps with rendering images
+                logging: false // Disables logging
+            });
+
+            // Create a new jsPDF instance
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Convert canvas to image data
+            const imgData = canvas.toDataURL('image/png');
+
+            // Get PDF page dimensions
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+
+            // Calculate image dimensions to fit the page
+            const imgWidth = pdfWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // Add the image to the PDF
+            pdf.addImage(
+                imgData,
+                'PNG',
+                0,
+                0,
+                imgWidth,
+                imgHeight
+            );
+
+            // Generate filename using employee details
+            const filename = `Payslip_${employee.name.username}_${employee.payPeriod}.pdf`;
+
+            // Save the PDF
+            pdf.save(filename);
+
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
+    };
 
     const companyInfo = {
-        name: "TechCorp Inc.",
-        logo: "/logo.png",
-        address: "123 Tech Avenue, Silicon Valley, CA 94043",
-        phone: "+1 (555) 123-4567",
-        email: "finance@techcorp.com"
+        name: "Farmers Choice Co.",
+        logo: "/src/pages/employee/assets/logo.png",
+        address: "Nairobi, Kahawa West, LA 94043",
+        phone: "+254 12345678",
+        email: "farmerchoice@co-op.com"
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    useEffect(() => {
+        const fetchPayrollData = async () => {
+            const token = localStorage.getItem("token");
 
-    if (!employee) {
-        return <div>Error: Employee not found</div>;
-    }
+            if (!token) {
+                setError("Unauthorized: Please log in.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const response = await axios.get("/payroll/me", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                setEmployee(response.data);
+            } catch (err) {
+                setError(err.response?.data?.message || "Failed to fetch payroll data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPayrollData();
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (!employee) return <div>Error: Payroll data not found</div>;
 
     const totalAllowances = Object.values(employee.allowances).reduce((sum, val) => sum + val, 0);
     const totalDeductions = Object.values(employee.deductions).reduce((sum, val) => sum + val, 0);
     const grossPay = employee.basicSalary + totalAllowances;
     const netPay = grossPay - totalDeductions;
 
-    const printInvoice = () => {
-        window.print();
-    };
-
     return (
-        <div className="invoice-page">
+        <div className="invoice-page" ref={invoiceRef}>
             <div className="invoice-actions non-printable">
-                <button className="btn-primary" onClick={printInvoice}>
-                    <i className="fas fa-print"></i> Print Invoice
-                </button>
-                <button className="btn-secondary">
-                    <i className="fas fa-download"></i> Download PDF
-                </button>
-                <button className="btn-secondary">
-                    <i className="fas fa-envelope"></i> Email to Employee
+                <button className="btn-primary" onClick={generatePDF}>
+                    <i className="fas fa-file-pdf"></i> Generate PDF
                 </button>
             </div>
 
@@ -79,8 +130,8 @@ const FinanceDetails = ({ employee: propEmployee }) => {
                     </div>
                     <div className="invoice-title">
                         <h1>Payslip</h1>
-                        <p>Pay Period: February 1-28, 2025</p>
-                        <p>Pay Date: February 28, 2025</p>
+                        <p>Pay Period: {employee.payPeriod}</p>
+                        <p>Pay Date: {new Date(employee.payDate).toLocaleDateString()}</p>
                     </div>
                 </div>
 
@@ -88,12 +139,8 @@ const FinanceDetails = ({ employee: propEmployee }) => {
                     <h3>Employee Information</h3>
                     <div className="details-grid">
                         <div>
-                            <p><strong>Name:</strong> {employee.name}</p>
-                            <p><strong>Position:</strong> {employee.position}</p>
-                        </div>
-                        <div>
-                            <p><strong>Department:</strong> {employee.department}</p>
-                            <p><strong>Payment Method:</strong> Direct Deposit</p>
+                            <p><strong>Name:</strong> {employee.name.username}</p>
+                            <p><strong>Position:</strong> {employee.department}</p>
                         </div>
                     </div>
                 </div>
@@ -105,17 +152,17 @@ const FinanceDetails = ({ employee: propEmployee }) => {
                             <tbody>
                                 <tr>
                                     <td>Basic Salary</td>
-                                    <td>${employee.basicSalary.toLocaleString()}</td>
+                                    <td>Ksh.{employee.basicSalary.toLocaleString()}</td>
                                 </tr>
                                 {Object.entries(employee.allowances).map(([key, value]) => (
                                     <tr key={key}>
                                         <td>{key.charAt(0).toUpperCase() + key.slice(1)} Allowance</td>
-                                        <td>${value.toLocaleString()}</td>
+                                        <td>Ksh.{value.toLocaleString()}</td>
                                     </tr>
                                 ))}
                                 <tr className="total-row">
                                     <td><strong>Gross Pay</strong></td>
-                                    <td><strong>${grossPay.toLocaleString()}</strong></td>
+                                    <td><strong>Ksh.{grossPay.toLocaleString()}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -128,12 +175,12 @@ const FinanceDetails = ({ employee: propEmployee }) => {
                                 {Object.entries(employee.deductions).map(([key, value]) => (
                                     <tr key={key}>
                                         <td>{key.charAt(0).toUpperCase() + key.slice(1)}</td>
-                                        <td>${value.toLocaleString()}</td>
+                                        <td>Ksh.{value.toLocaleString()}</td>
                                     </tr>
                                 ))}
                                 <tr className="total-row">
                                     <td><strong>Total Deductions</strong></td>
-                                    <td><strong>${totalDeductions.toLocaleString()}</strong></td>
+                                    <td><strong>Ksh.{totalDeductions.toLocaleString()}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -142,10 +189,7 @@ const FinanceDetails = ({ employee: propEmployee }) => {
 
                 <div className="net-pay">
                     <h3>Net Pay</h3>
-                    <div className="net-pay-amount">${netPay.toLocaleString()}</div>
-                    <p className="payment-note">
-                        Payment processed via Direct Deposit on February 28, 2025
-                    </p>
+                    <div className="net-pay-amount">Ksh.{netPay.toLocaleString()}</div>
                 </div>
 
                 <div className="invoice-footer">
@@ -157,4 +201,4 @@ const FinanceDetails = ({ employee: propEmployee }) => {
     );
 };
 
-export default FinanceDetails;
+export default Invoice;

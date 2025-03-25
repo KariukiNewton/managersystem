@@ -1,5 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { FiUser, FiLogOut, FiSettings, FiBell, FiSun, FiMoon, FiChevronLeft } from "react-icons/fi";
 import { CgDetailsMore } from "react-icons/cg";
 import { ThemeContext } from "../context/ThemeContext";
@@ -33,13 +34,26 @@ const Header = ({ userRole, isSidebarOpen, toggleSidebar }) => {
         };
     }, []);
 
-    const handleLogout = () => {
-        console.log("Logging out...");
-        setUser(null);
-        axios.defaults.headers.common["Authorization"] = "";
-        localStorage.removeItem("user");
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            console.log("Logging out...");
+
+            // Send logout request to backend
+            await axios.post("/auth/logout", {}, { withCredentials: true });
+
+            // Clear user state & local storage
+            setUser(null);
+            localStorage.removeItem("user");
+
+            // Redirect after a short delay to ensure state updates
+            setTimeout(() => {
+                navigate("/login");
+            }, 100);
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
     };
+
 
     const getDashboardTitle = () => {
         switch (userRole) {

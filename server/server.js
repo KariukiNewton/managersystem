@@ -34,7 +34,7 @@ app.use('/users', userRoutes);
 app.use('/departments', departmentRoutes);
 app.use('/payroll', payrollRoutes);
 app.use('/attendance', attendanceRoutes);
-app.use('/leave', leaveRoutes);
+app.use('/leaves', leaveRoutes);
 
 
 // Server Port

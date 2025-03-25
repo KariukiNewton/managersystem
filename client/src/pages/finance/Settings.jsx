@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import logo from "./assets/logo.png";
 
 const Settings = () => {
     const [companyInfo, setCompanyInfo] = useState({
-        name: "TechCorp Inc.",
-        logo: "/logo.png",
-        address: "123 Tech Avenue, Silicon Valley, CA 94043",
-        phone: "+1 (555) 123-4567",
-        email: "finance@techcorp.com"
+        name: "Farmers Choice Co.",
+        logo: "/assets/logo.png",
+        address: "Nairobi, Kahawa West, LA 94043",
+        phone: "+254 12345678",
+        email: "farmerchoice@comp.com"
     });
 
     const [payrollSettings, setPayrollSettings] = useState({
