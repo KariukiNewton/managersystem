@@ -236,19 +236,18 @@
         margin-top: 1.5rem;
         color: #666;
 
-        &__links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
+        .quick-links__links button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
 
-            a {
-                color: #3b82f6;
-                text-decoration: none;
-                transition: color 0.3s ease;
-
-                &:hover {
-                    text-decoration: underline;
-                }
+            &:hover {
+                background-color: #0056b3;
             }
         }
     }

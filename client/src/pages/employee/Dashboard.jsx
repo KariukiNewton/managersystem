@@ -12,6 +12,7 @@ import UserContext from "../../context/UserContext";
 import "../../styles/styles.scss";
 
 const EmployeeDashboard = () => {
+
     return (
         <Routes>
             <Route index element={<DashboardHome />} />
@@ -68,9 +69,9 @@ const DashboardHome = () => {
 
     const userData = {
         name: user.username,
-        role: user.role, // Using role instead of position
+        role: user.role,
         department: user.department,
-        employeeId: user.id, // Using user.id instead of employeeId
+        employeeId: user.id,
         avatar: user.avatar || generateAvatar(user.username)
     };
 

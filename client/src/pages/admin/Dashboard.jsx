@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import axios from "axios";
 import {
     UsersIcon,
     DollarSignIcon,
@@ -38,6 +39,22 @@ const AdminDashboard = () => {
 
 // Dashboard home component
 const DashboardHome = () => {
+    const navigate = useNavigate();
+    const [totalUsers, setTotalUsers] = useState(0);
+
+    useEffect(() => {
+        fetchTotalUsers();
+    }, []);
+
+
+    const fetchTotalUsers = async () => {
+        try {
+            const response = await axios.get("/users/total-users");
+            setTotalUsers(response.data.totalUsers);
+        } catch (error) {
+            console.error("Error fetching total users:", error);
+        }
+    };
     // Sample data (would typically come from backend APIs)
     const [notifications, setNotifications] = useState([
         { id: 1, type: 'warning', message: 'Inventory levels low in Agricultural Department', time: '2 hours ago' },
@@ -46,7 +63,6 @@ const DashboardHome = () => {
     ]);
 
     const summaryData = {
-        totalUsers: 42,
         totalDepartments: 5,
         pendingLeaveRequests: 3,
         activeProjects: 7,
@@ -156,12 +172,12 @@ const DashboardHome = () => {
                 <QuickStatCard
                     icon={UsersIcon}
                     title="Total Users"
-                    value={summaryData.totalUsers}
+                    value={totalUsers}
                 />
                 <QuickStatCard
                     icon={DollarSignIcon}
                     title="Monthly Revenue"
-                    value={`$${summaryData.monthlyRevenue.toLocaleString()}`}
+                    value={`Ksh.${summaryData.monthlyRevenue.toLocaleString()}`}
                 />
                 <QuickStatCard
                     icon={ClipboardListIcon}
@@ -199,8 +215,8 @@ const DashboardHome = () => {
                         </span>
                     </div>
                     <div className="dashboard-card__content">
-                        <p>Top Performing Department: Agriculture</p>
-                        <p>Employee of the Month: John Doe</p>
+                        <p>Top Performing Department: Production and Processing</p>
+                        <p>Employee of the Month: Frank MAtho</p>
                     </div>
                 </div>
 
@@ -217,9 +233,15 @@ const DashboardHome = () => {
             <div className="quick-links">
                 <p>Quick Links:</p>
                 <div className="quick-links__links">
-                    <a href="/admin/users">Manage Users</a>
-                    <a href="/admin/finance">Financial Reports</a>
-                    <a href="/admin/departments">Department Management</a>
+                    <button onClick={() => navigate("/admin/dashboard/users")}>
+                        Manage Users
+                    </button>
+                    <button onClick={() => navigate("/admin/dashboard/finance")}>
+                        Financial Reports
+                    </button>
+                    <button onClick={() => navigate("/admin/dashboard/departments")}>
+                        Department Management
+                    </button>
                 </div>
             </div>
         </div>

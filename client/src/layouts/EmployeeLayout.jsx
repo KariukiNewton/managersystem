@@ -29,10 +29,8 @@ const EmployeeLayout = () => {
     }, [user, setUser]);
 
     useEffect(() => {
-        //console.log("User in EmployeeLayout:", user); // Debugging
-        //const token = localStorage.getItem("token");
-        //console.log("User in EmployeeLayout User Token:", token);
-        if (user === undefined) return; // Avoid unnecessary redirects
+        if (user === undefined) return; // Avoid unnecessary redirects while loading
+        if (user === null) return; // Wait until user context is fully initialized
         if (!user) {
             navigate("/login", { replace: true });
         }

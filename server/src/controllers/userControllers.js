@@ -72,4 +72,15 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getAllUsers, updateUser, deleteUser };
+// Get total user count
+const getTotalUsers = async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        res.status(200).json({ totalUsers });
+    } catch (error) {
+        console.error("Error fetching total users:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+module.exports = { getTotalUsers, getAllUsers, updateUser, deleteUser };
